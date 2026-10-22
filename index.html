@@ -276,26 +276,23 @@
   </div>
 
 <script>
-  // 🔴 ضع رابط Google Apps Script هنا 🔴
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwsQntdXq-h9vi3hkZfdoYtLIeV-hBVaw-BHTXnUXyzyC24eWyiyN2oHVYSEs4fYDQq/exec';
+  // 🔴 تم تحديث الرابط بناءً على طلبك 🔴
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz9JYBX2DUKPUjXpjhQdt39YAWYki0akgEoiw74G0aBxTdXjuyV61hDs3XGaToDvXWN/exec';
   
-  // 🔴 اسم ملف الأسماء الذي سيرفعه GitHub (بدون تغيير) 🔴
+  // اسم ملف الأسماء الذي ينتجه GitHub Actions
   const JSON_URL = 'encoded_data.txt';
 
   const ADMIN_PASS = "admin123";
   let currentEmp = null;
 
-  // جلب الأسماء وفك التشفير مع معالجة الأخطاء
+  // جلب الأسماء وفك التشفير
   async function fetchEmployees() {
     try {
       const res = await fetch(JSON_URL);
       if (!res.ok) throw new Error("لم يتم العثور على ملف البيانات");
       
       const b64 = await res.text();
-      // تنظيف النص من أي مسافات أو أسطر جديدة
       const cleanB64 = b64.replace(/\s/g, '');
-      
-      // فك تشفير Base64 بطريقة آمنة للغة العربية
       const decoded = decodeURIComponent(escape(window.atob(cleanB64)));
       return JSON.parse(decoded);
     } catch(e) { 
@@ -305,20 +302,31 @@
     }
   }
 
-  // دالة مساعدة للاتصال بـ Google Apps Script
+  // دالة الاتصال المحدثة (لحل مشكلة CORS)
   async function apiCall(action, payload) {
     try {
       if (action === 'getBalance') {
         const res = await fetch(`${API_URL}?action=getBalance&empId=${payload.empId}`);
         return await res.json();
       } else {
+        // استخدام URLSearchParams بدلاً من JSON
+        const formData = new URLSearchParams();
+        formData.append('action', action);
+        if (payload.data) {
+          formData.append('data', JSON.stringify(payload.data));
+        }
+
         const res = await fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: action, ...payload })
+          body: formData,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
+        
+        if (!res.ok) throw new Error("فشل الاتصال");
         return await res.json();
       }
     } catch (e) {
+      console.error("API Error:", e);
       return { success: false, message: "خطأ في الاتصال بالخادم." };
     }
   }
@@ -332,7 +340,7 @@
     document.getElementById('loginError').style.color = "#666";
     
     const emps = await fetchEmployees();
-    if(emps.length === 0) return; // إذا فشل تحميل البيانات يتوقف هنا
+    if(emps.length === 0) return;
 
     let emp = emps.find(e => e.employeeId === id || e.personalId === id);
 
@@ -342,15 +350,12 @@
       return;
     }
 
-    // استبدال كريم بالدوسري
     if(emp.name.includes('كريم احمد')) {
       emp.name = "محمد عبد الله برمان الدوسري";
       emp.jobTitle = "منسق تربية رياضية";
     }
 
     currentEmp = emp;
-    
-    // جلب الرصيد
     const balRes = await apiCall('getBalance', { empId: emp.employeeId });
     
     document.getElementById('loginCard').classList.add('hidden');
@@ -359,8 +364,6 @@
     document.getElementById('empJob').innerText = emp.jobTitle;
     document.getElementById('empBalance').innerText = (balRes.balance || 600) + " دقيقة";
     document.getElementById('loginError').innerText = "";
-    
-    // تعيين تاريخ اليوم
     document.getElementById('permDate').valueAsDate = new Date();
   }
 
@@ -407,7 +410,7 @@
       document.getElementById('reason').value = "";
       verifyEmp(); // تحديث الرصيد
     } else {
-      document.getElementById('successMsg').innerText = "حدث خطأ أثناء الحفظ.";
+      document.getElementById('successMsg').innerText = "حدث خطأ أثناء الحفظ. يرجى المحاولة لاحقاً.";
       document.getElementById('successMsg').style.color = "#dc3545";
     }
   }
