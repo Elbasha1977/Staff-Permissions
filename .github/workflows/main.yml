@@ -1,0 +1,42 @@
+name: Deploy Secure System
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Decode and Merge Files
+        run: |
+          # 1. دمج وفك تشفير ملف الواجهة
+          echo -n "${{ secrets.INDEX_PART_1 }}${{ secrets.INDEX_PART_2 }}" | base64 --decode > index.html
+          
+          # 2. دمج وفك تشفير ملف الأسماء
+          echo -n "${{ secrets.STUDENTS_PART_1 }}${{ secrets.STUDENTS_PART_2 }}" | base64 --decode > data.json
+          
+          # 3. إعادة تشفير ملف الأسماء (ليكون محمياً على الموقع وليس مكشوفاً)
+          base64 data.json > encoded_data.txt
+          
+          # 4. تعديل رابط الـ JSON داخل ملف الـ HTML ليشير للملف المشفر
+          # (هذا يفترض أنك وضعت كلمة JSON_URL_PLACEHOLDER داخل كود الـ HTML)
+          sed -i "s|JSON_URL_PLACEHOLDER|./encoded_data.txt|g" index.html
+          
+          # 5. حذف الملف الأصلي (غير المشفر) لضمان عدم رفعه
+          rm data.json
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
