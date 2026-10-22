@@ -77,8 +77,6 @@
           <input type="text" id="empIdInput" placeholder="مثال: 114945" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         </div>
         <button class="btn btn-primary" onclick="verifyEmp()">تسجيل الدخول</button>
-        
-        <!-- زر تتبع الطلب -->
         <button class="btn btn-outline" onclick="showTrackingScreen()">🔍 تتبع حالة طلب سابق</button>
         <p id="loginError" style="color:#dc3545; text-align:center; margin-top:15px; font-weight:bold; font-size:0.9rem;"></p>
       </div>
@@ -216,10 +214,22 @@
   
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
 
+  // 🔴 ضع أرقام المنسقين الفعلية هنا (بصيغة دولية) 🔴
   const COORDINATORS_PHONES = {
-    'عربي': '97433337801', 'انجليزي': '97433337802', 'رياضيات': '97433337803', 
-    'علوم': '97433337804', 'اجتماعيات': '97433337805', 'فنون': '97433337806', 
-    'تكنولوجيا': '97433337807', 'رياضية': '97430700530', 'default': '97433337801'
+    'عربي': '97455229732',        
+    'انجليزي': '97455742864',   
+         'منسق علوم شرعية': '97450562783',   
+
+    'رياضيات': '97430066844',     
+    'علوم': '97455946775',        
+    'اجتماعيات': '97430054477
+',   
+    'فنون': '97431007224
+',        
+    'تكنولوجيا': '97450567579
+',   
+    'رياضية': '97430700530',      
+    'default': '97433337801'      
   };
   const VP_PHONE = "97433337801"; 
 
@@ -258,9 +268,8 @@
         document.getElementById('trackResult').classList.remove('hidden');
         const status = result.data.status;
         
-        // تصفير الشريط
         ['step1','step2','step3','step4'].forEach(id => document.getElementById(id).className = 'status-step');
-        document.getElementById('step1').classList.add('active'); // دائماً المعلم نشط لأنه قدم الطلب
+        document.getElementById('step1').classList.add('active');
 
         if(status === 'pending') {
           document.getElementById('trkStatusText').innerText = "بانتظار المنسق";
@@ -297,27 +306,36 @@
     }
   }
 
-  // ---------------- 2. الوظائف السابقة ----------------
+  // ---------------- 2. تسجيل الدخول والتوجيه الذكي ----------------
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
     const emps = await fetchEmployees();
     let emp = emps.find(e => e.employeeId === id || e.personalId === id);
-    if(!emp) { document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; return; }
     
-    if(emp.name.includes('كريم احمد')) { emp.name = "محمد عبد الله برمان الدوسري"; emp.jobTitle = "منسق تربية رياضية"; }
+    if(!emp) { 
+      document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; 
+      return; 
+    }
+    
+    if(emp.name.includes('كريم احمد')) { 
+      emp.name = "محمد عبد الله برمان الدوسري"; 
+      emp.jobTitle = "منسق تربية رياضية"; 
+    }
+    
     currentEmp = emp;
+    let job = (emp.jobTitle || "").toLowerCase();
 
-    let job = emp.jobTitle.toLowerCase();
-    if(job.includes('انجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
-    else if(job.includes('عربي')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
-    else if(job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
-    else if(job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
-    else if(job.includes('اجتماعيات') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
-    else if(job.includes('فنون')) currentCoordinatorPhone = COORDINATORS_PHONES['فنون'];
-    else if(job.includes('تكنولوجيا') || job.includes('حاسب')) currentCoordinatorPhone = COORDINATORS_PHONES['تكنولوجيا'];
-    else if(job.includes('رياضية') || job.includes('رياضه')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضية'];
-    else currentCoordinatorPhone = VP_PHONE; 
+    // التوجيه الذكي بناءً على المسمى الوظيفي
+    if (job.includes('انجليزي') || job.includes('إنجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
+    else if (job.includes('عربي') || job.includes('عربية')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
+    else if (job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
+    else if (job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
+    else if (job.includes('اجتماع') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
+    else if (job.includes('فنون')) currentCoordinatorPhone = COORDINATORS_PHONES['فنون'];
+    else if (job.includes('تكنولوجيا') || job.includes('حاسب')) currentCoordinatorPhone = COORDINATORS_PHONES['تكنولوجيا'];
+    else if (job.includes('رياضي') || job.includes('رياضة')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضية'];
+    else currentCoordinatorPhone = VP_PHONE; // الإداريين والفنون المسرحية
 
     const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
     const bal = await res.json();
@@ -392,6 +410,7 @@
     window.open(url, '_blank');
   }
 
+  // ---------------- 3. شاشات الاعتماد ----------------
   function askPassword(role) {
     const pass = prompt("أدخل كلمة المرور الخاصة بك:");
     if (pass === PASSWORDS[role]) {
@@ -448,10 +467,7 @@
       if (currentRole === 'coordinator' && decision === 'approved') {
         sendAutoWhatsApp(VP_PHONE, reqId, "النائب الأكاديمي", "المنسق");
       } else if (currentRole === 'vp' && decision === 'approved') {
-        // إرسال واتساب تلقائي لمدير المدرسة (ضع رقم المدير هنا)
-        sendAutoWhatsApp("97412345678", reqId, "مدير المدرسة", "النائب الأكاديمي");
-      } else if (currentRole === 'principal' && decision === 'approved') {
-        // إرسال رسالة للمعلم بالاعتماد (رقم المعلم لم نجلبه هنا، يمكن إضافته لاحقاً)
+        sendAutoWhatsApp("97400000000", reqId, "مدير المدرسة", "النائب الأكاديمي"); // ضع رقم المدير هنا
       }
     }
   }
