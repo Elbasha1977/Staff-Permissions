@@ -1,4 +1,4 @@
-name: Deploy Secure System
+name: Build and Deploy Secure System
 
 on:
   push:
@@ -18,20 +18,19 @@ jobs:
 
       - name: Decode and Merge Files
         run: |
-          # 1. دمج وفك تشفير ملف الواجهة
-          echo -n "${{ secrets.INDEX_PART_1 }}${{ secrets.INDEX_PART_2 }}" | base64 --decode > index.html
+          # 1. فك تشفير ملف الواجهة (لأنه سر واحد فقط)
+          echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > index.html
           
-          # 2. دمج وفك تشفير ملف الأسماء
-          echo -n "${{ secrets.STUDENTS_PART_1 }}${{ secrets.STUDENTS_PART_2 }}" | base64 --decode > data.json
+          # 2. فك تشفير ملف الأسماء (لأنه سر واحد فقط)
+          echo -n "${{ secrets.STUDENTS_PART_1 }}" | base64 --decode > data.json
           
-          # 3. إعادة تشفير ملف الأسماء (ليكون محمياً على الموقع وليس مكشوفاً)
+          # 3. إعادة تشفير ملف الأسماء ليتم رفعه على الموقع
           base64 data.json > encoded_data.txt
           
-          # 4. تعديل رابط الـ JSON داخل ملف الـ HTML ليشير للملف المشفر
-          # (هذا يفترض أنك وضعت كلمة JSON_URL_PLACEHOLDER داخل كود الـ HTML)
+          # 4. استبدال رابط الـ JSON داخل الـ HTML ليشير للملف المشفر
           sed -i "s|JSON_URL_PLACEHOLDER|./encoded_data.txt|g" index.html
           
-          # 5. حذف الملف الأصلي (غير المشفر) لضمان عدم رفعه
+          # 5. حذف الملف الأصلي غير المشفر
           rm data.json
 
       - name: Deploy to GitHub Pages
