@@ -16,21 +16,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Decode and Merge Files
+      - name: Decode and Prepare Files
         run: |
-          # 1. فك تشفير ملف الواجهة (لأنه سر واحد فقط)
+          # 1. فك تشفير ملف الواجهة
           echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > index.html
           
-          # 2. فك تشفير ملف الأسماء (لأنه سر واحد فقط)
+          # 2. فك تشفير ملف الأسماء
           echo -n "${{ secrets.STUDENTS_PART_1 }}" | base64 --decode > data.json
           
-          # 3. إعادة تشفير ملف الأسماء ليتم رفعه على الموقع
-          base64 data.json > encoded_data.txt
+          # 3. إعادة تشفير الأسماء بدون فواصل أسطر (مهم جداً)
+          base64 -w 0 data.json > encoded_data.txt
           
-          # 4. استبدال رابط الـ JSON داخل الـ HTML ليشير للملف المشفر
-          sed -i "s|JSON_URL_PLACEHOLDER|./encoded_data.txt|g" index.html
-          
-          # 5. حذف الملف الأصلي غير المشفر
+          # 4. حذف الملف الأصلي
           rm data.json
 
       - name: Deploy to GitHub Pages
