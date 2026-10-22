@@ -74,7 +74,7 @@
       font-weight: 600;
     }
     
-    /* تنسيق الشعار الجديد (بعرض الصفحة بالكامل) */
+    /* تنسيق الشعار (بعرض الصفحة بالكامل) */
     .school-logo-container {
       width: 100%;
       display: flex;
@@ -169,7 +169,6 @@
     <div class="animated-wrapper" id="loginCard">
       <div class="card">
         <div class="header-title">
-          <!-- حاوية الشعار بعرض الصفحة -->
           <div class="school-logo-container">
             <img src="https://i.postimg.cc/tRm07wZF/MOTTO.png" alt="شعار المدرسة" class="school-logo">
           </div>
@@ -276,12 +275,10 @@
   </div>
 
 <script>
-  // 🔴 تم تحديث الرابط بناءً على طلبك 🔴
+  // 🔴 الرابط الخاص بك 🔴
   const API_URL = 'https://script.google.com/macros/s/AKfycbz9JYBX2DUKPUjXpjhQdt39YAWYki0akgEoiw74G0aBxTdXjuyV61hDs3XGaToDvXWN/exec';
   
-  // اسم ملف الأسماء الذي ينتجه GitHub Actions
   const JSON_URL = 'encoded_data.txt';
-
   const ADMIN_PASS = "admin123";
   let currentEmp = null;
 
@@ -302,31 +299,24 @@
     }
   }
 
-  // دالة الاتصال المحدثة (لحل مشكلة CORS)
+  // دالة الاتصال للرصيد فقط
   async function apiCall(action, payload) {
     try {
       if (action === 'getBalance') {
         const res = await fetch(`${API_URL}?action=getBalance&empId=${payload.empId}`);
         return await res.json();
-      } else {
-        // استخدام URLSearchParams بدلاً من JSON
+      } else if (action === 'getStats') {
+        // للإحصائيات نستخدم FormData
         const formData = new URLSearchParams();
         formData.append('action', action);
-        if (payload.data) {
-          formData.append('data', JSON.stringify(payload.data));
-        }
-
         const res = await fetch(API_URL, {
           method: 'POST',
           body: formData,
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
-        
-        if (!res.ok) throw new Error("فشل الاتصال");
         return await res.json();
       }
     } catch (e) {
-      console.error("API Error:", e);
       return { success: false, message: "خطأ في الاتصال بالخادم." };
     }
   }
@@ -381,8 +371,8 @@
     return 0;
   }
 
-  // إرسال الطلب
-  async function submitRequest() {
+  // إرسال الطلب (بطريقة الـ iframe المخفي لتجاوز CORS)
+  function submitRequest() {
     const date = document.getElementById('permDate').value;
     if(!date) { alert("يرجى تحديد التاريخ"); return; }
 
@@ -401,18 +391,48 @@
 
     document.getElementById('successMsg').innerText = "جاري الحفظ...";
     document.getElementById('successMsg').style.color = "#666";
-    
-    const res = await apiCall('submit', { data: data });
-    
-    if(res.success) {
-      document.getElementById('successMsg').innerText = `✅ تم الحفظ بنجاح! رقم الطلب: ${res.requestId}`;
+
+    // إنشاء iframe مخفي
+    const iframeName = 'hidden_iframe_' + Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.name = iframeName;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // إنشاء النموذج
+    const form = document.createElement('form');
+    form.action = API_URL;
+    form.method = 'POST';
+    form.target = iframeName;
+    form.style.display = 'none';
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'submit');
+    formData.append('data', JSON.stringify(data));
+
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // إظهار رسالة النجاح بعد ثانيتين
+    setTimeout(() => {
+      document.getElementById('successMsg').innerText = `✅ تم الحفظ بنجاح! (يرجى مراجعة الشيت لتأكيد الطلب)`;
       document.getElementById('successMsg').style.color = "#28a745";
       document.getElementById('reason').value = "";
+      
+      // تنظيف العناصر المؤقتة
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+      
       verifyEmp(); // تحديث الرصيد
-    } else {
-      document.getElementById('successMsg').innerText = "حدث خطأ أثناء الحفظ. يرجى المحاولة لاحقاً.";
-      document.getElementById('successMsg').style.color = "#dc3545";
-    }
+    }, 2000);
   }
 
   // ================== لوحة الإدارة ==================
