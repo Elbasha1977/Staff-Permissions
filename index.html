@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام الاستئذان الإلكتروني - مدرسة أحمد بن راشد المريخي</title>
+  <title>نظام الاستئذان - مدرسة أحمد بن راشد المريخي</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root { 
@@ -82,9 +82,9 @@
       margin-bottom: 10px;
     }
     .school-logo {
-      width: 100%;       /* يمتد بعرض البطاقة بالكامل */
-      max-width: 100%;   /* إزالة أي قيود سابقة */
-      height: auto;      /* الحفاظ على التناسب */
+      width: 100%;
+      max-width: 100%;
+      height: auto;
       object-fit: contain;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
     }
@@ -173,7 +173,7 @@
           <div class="school-logo-container">
             <img src="https://i.postimg.cc/tRm07wZF/MOTTO.png" alt="شعار المدرسة" class="school-logo">
           </div>
-          <h1>نظام الاستئذان الإلكتروني</h1>
+          <h1>نظام الاستئذان</h1>
           <p>مدرسة أحمد بن راشد المريخي الابتدائية بنين</p>
         </div>
         
@@ -276,24 +276,36 @@
   </div>
 
 <script>
+  // 🔴 ضع رابط Google Apps Script هنا 🔴
   const API_URL = 'https://script.google.com/macros/s/AKfycbyK1_L92RRX8aAMmHVALEJTy_yckeUBfq-7CInkEmtTaEuTfGEIha6AZoxHmBnJb1M/exec';
-  const JSON_URL = 'JSON_URL_PLACEHOLDER';
+  
+  // 🔴 اسم ملف الأسماء الذي سيرفعه GitHub (بدون تغيير) 🔴
+  const JSON_URL = 'encoded_data.txt';
 
   const ADMIN_PASS = "admin123";
   let currentEmp = null;
 
+  // جلب الأسماء وفك التشفير مع معالجة الأخطاء
   async function fetchEmployees() {
     try {
       const res = await fetch(JSON_URL);
+      if (!res.ok) throw new Error("لم يتم العثور على ملف البيانات");
+      
       const b64 = await res.text();
-      const decoded = decodeURIComponent(escape(window.atob(b64)));
+      // تنظيف النص من أي مسافات أو أسطر جديدة
+      const cleanB64 = b64.replace(/\s/g, '');
+      
+      // فك تشفير Base64 بطريقة آمنة للغة العربية
+      const decoded = decodeURIComponent(escape(window.atob(cleanB64)));
       return JSON.parse(decoded);
     } catch(e) { 
-      console.error("خطأ في جلب البيانات", e);
+      console.error("خطأ في جلب البيانات:", e);
+      document.getElementById('loginError').innerText = "خطأ في تحميل قاعدة البيانات. يرجى مراجعة الإدارة.";
       return []; 
     }
   }
 
+  // دالة مساعدة للاتصال بـ Google Apps Script
   async function apiCall(action, payload) {
     try {
       if (action === 'getBalance') {
@@ -311,6 +323,7 @@
     }
   }
 
+  // التحقق من الموظف
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
@@ -319,6 +332,8 @@
     document.getElementById('loginError').style.color = "#666";
     
     const emps = await fetchEmployees();
+    if(emps.length === 0) return; // إذا فشل تحميل البيانات يتوقف هنا
+
     let emp = emps.find(e => e.employeeId === id || e.personalId === id);
 
     if(!emp) {
@@ -327,12 +342,15 @@
       return;
     }
 
+    // استبدال كريم بالدوسري
     if(emp.name.includes('كريم احمد')) {
       emp.name = "محمد عبد الله برمان الدوسري";
       emp.jobTitle = "منسق تربية رياضية";
     }
 
     currentEmp = emp;
+    
+    // جلب الرصيد
     const balRes = await apiCall('getBalance', { empId: emp.employeeId });
     
     document.getElementById('loginCard').classList.add('hidden');
@@ -341,9 +359,12 @@
     document.getElementById('empJob').innerText = emp.jobTitle;
     document.getElementById('empBalance').innerText = (balRes.balance || 600) + " دقيقة";
     document.getElementById('loginError').innerText = "";
+    
+    // تعيين تاريخ اليوم
     document.getElementById('permDate').valueAsDate = new Date();
   }
 
+  // حساب المدة
   function calcDuration() {
     const exit = document.getElementById('exitTime').value;
     const ret = document.getElementById('returnTime').value;
@@ -357,6 +378,7 @@
     return 0;
   }
 
+  // إرسال الطلب
   async function submitRequest() {
     const date = document.getElementById('permDate').value;
     if(!date) { alert("يرجى تحديد التاريخ"); return; }
@@ -383,13 +405,14 @@
       document.getElementById('successMsg').innerText = `✅ تم الحفظ بنجاح! رقم الطلب: ${res.requestId}`;
       document.getElementById('successMsg').style.color = "#28a745";
       document.getElementById('reason').value = "";
-      verifyEmp();
+      verifyEmp(); // تحديث الرصيد
     } else {
       document.getElementById('successMsg').innerText = "حدث خطأ أثناء الحفظ.";
       document.getElementById('successMsg').style.color = "#dc3545";
     }
   }
 
+  // ================== لوحة الإدارة ==================
   function showAdminLogin() {
     document.getElementById('employeePortal').classList.add('hidden');
     document.getElementById('adminDashboard').classList.add('hidden');
