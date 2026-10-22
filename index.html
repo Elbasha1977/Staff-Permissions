@@ -77,6 +77,8 @@
           <input type="text" id="empIdInput" placeholder="مثال: 114945" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         </div>
         <button class="btn btn-primary" onclick="verifyEmp()">تسجيل الدخول</button>
+        
+        <!-- زر تتبع الطلب -->
         <button class="btn btn-outline" onclick="showTrackingScreen()">🔍 تتبع حالة طلب سابق</button>
         <p id="loginError" style="color:#dc3545; text-align:center; margin-top:15px; font-weight:bold; font-size:0.9rem;"></p>
       </div>
@@ -214,19 +216,11 @@
   
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
 
-  // 🔴 تم إصلاح الأرقام وإزالة المسافات الزائدة 🔴
   const COORDINATORS_PHONES = {
-    'عربي': '97455229732',
-    'انجليزي': '97455742864',
-    'رياضيات': '97430066844',
-    'علوم': '97455946775',
-    'اجتماعيات': '97430054477',
-    'فنون': '97431007224',
-    'تكنولوجيا': '97450567579',
-    'رياضية': '97430700530',
-    'default': '97433337801'
+    'عربي': '97433337801', 'انجليزي': '97433337802', 'رياضيات': '97433337803', 
+    'علوم': '97433337804', 'اجتماعيات': '97433337805', 'فنون': '97433337806', 
+    'تكنولوجيا': '97433337807', 'رياضية': '97430700530', 'default': '97433337801'
   };
-  
   const VP_PHONE = "97433337801"; 
 
   let currentEmp = null;
@@ -236,11 +230,21 @@
 
   async function fetchEmployees() {
     try {
-      const res = await fetch(JSON_URL);
-      const b64 = await res.text();
-      const decoded = decodeURIComponent(escape(window.atob(b64.replace(/\s/g, ''))));
-      return JSON.parse(decoded);
-    } catch(e) { return []; }
+      const res = await fetch(JSON_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('تعذر تحميل ملف بيانات الموظفين: ' + res.status);
+      const b64 = (await res.text()).replace(/\s/g, '');
+      const binary = window.atob(b64);
+      const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+      const decoded = new TextDecoder('utf-8').decode(bytes);
+      const data = JSON.parse(decoded);
+      if (!Array.isArray(data)) throw new Error('تنسيق ملف بيانات الموظفين غير صحيح.');
+      return data;
+    } catch(e) {
+      console.error('fetchEmployees:', e);
+      const errorEl = document.getElementById('loginError');
+      if (errorEl) errorEl.innerText = 'تعذر تحميل بيانات الموظفين. تحقق من وجود encoded_data.txt في مجلد النشر.';
+      return [];
+    }
   }
 
   // ---------------- 1. واجهة تتبع الطلب ----------------
@@ -264,8 +268,9 @@
         document.getElementById('trackResult').classList.remove('hidden');
         const status = result.data.status;
         
+        // تصفير الشريط
         ['step1','step2','step3','step4'].forEach(id => document.getElementById(id).className = 'status-step');
-        document.getElementById('step1').classList.add('active');
+        document.getElementById('step1').classList.add('active'); // دائماً المعلم نشط لأنه قدم الطلب
 
         if(status === 'pending') {
           document.getElementById('trkStatusText').innerText = "بانتظار المنسق";
@@ -302,36 +307,32 @@
     }
   }
 
-  // ---------------- 2. تسجيل الدخول والتوجيه الذكي ----------------
+  // ---------------- 2. الوظائف السابقة ----------------
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
     const emps = await fetchEmployees();
-    let emp = emps.find(e => e.employeeId === id || e.personalId === id);
-    
-    if(!emp) { 
-      document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; 
-      return; 
+    if (!Array.isArray(emps) || emps.length === 0) {
+      document.getElementById('loginError').innerText =
+        'لم يتم تحميل بيانات الموظفين. تحقق من ملف encoded_data.txt ومن نشره على GitHub Pages.';
+      return;
     }
+    let emp = emps.find(e => String(e.employeeId || '') === id || String(e.personalId || '') === id);
+    if(!emp) { document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; return; }
     
-    if(emp.name.includes('كريم احمد')) { 
-      emp.name = "محمد عبد الله برمان الدوسري"; 
-      emp.jobTitle = "منسق تربية رياضية"; 
-    }
-    
+    if(emp.name.includes('كريم احمد')) { emp.name = "محمد عبد الله برمان الدوسري"; emp.jobTitle = "منسق تربية رياضية"; }
     currentEmp = emp;
-    let job = (emp.jobTitle || "").toLowerCase();
 
-    // التوجيه الذكي
-    if (job.includes('انجليزي') || job.includes('إنجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
-    else if (job.includes('عربي') || job.includes('عربية') || job.includes('شرعية')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
-    else if (job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
-    else if (job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
-    else if (job.includes('اجتماع') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
-    else if (job.includes('فنون')) currentCoordinatorPhone = COORDINATORS_PHONES['فنون'];
-    else if (job.includes('تكنولوجيا') || job.includes('حاسب')) currentCoordinatorPhone = COORDINATORS_PHONES['تكنولوجيا'];
-    else if (job.includes('رياضي') || job.includes('رياضة')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضية'];
-    else currentCoordinatorPhone = VP_PHONE; // الإداريين والفنون المسرحية
+    let job = emp.jobTitle.toLowerCase();
+    if(job.includes('انجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
+    else if(job.includes('عربي')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
+    else if(job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
+    else if(job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
+    else if(job.includes('اجتماعيات') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
+    else if(job.includes('فنون')) currentCoordinatorPhone = COORDINATORS_PHONES['فنون'];
+    else if(job.includes('تكنولوجيا') || job.includes('حاسب')) currentCoordinatorPhone = COORDINATORS_PHONES['تكنولوجيا'];
+    else if(job.includes('رياضية') || job.includes('رياضه')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضية'];
+    else currentCoordinatorPhone = VP_PHONE; 
 
     const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
     const bal = await res.json();
@@ -406,7 +407,6 @@
     window.open(url, '_blank');
   }
 
-  // ---------------- 3. شاشات الاعتماد ----------------
   function askPassword(role) {
     const pass = prompt("أدخل كلمة المرور الخاصة بك:");
     if (pass === PASSWORDS[role]) {
@@ -463,7 +463,10 @@
       if (currentRole === 'coordinator' && decision === 'approved') {
         sendAutoWhatsApp(VP_PHONE, reqId, "النائب الأكاديمي", "المنسق");
       } else if (currentRole === 'vp' && decision === 'approved') {
-        sendAutoWhatsApp("97400000000", reqId, "مدير المدرسة", "النائب الأكاديمي"); // ضع رقم المدير هنا
+        // إرسال واتساب تلقائي لمدير المدرسة (ضع رقم المدير هنا)
+        sendAutoWhatsApp("97412345678", reqId, "مدير المدرسة", "النائب الأكاديمي");
+      } else if (currentRole === 'principal' && decision === 'approved') {
+        // إرسال رسالة للمعلم بالاعتماد (رقم المعلم لم نجلبه هنا، يمكن إضافته لاحقاً)
       }
     }
   }
@@ -488,6 +491,40 @@
       `;
     }
   }
+
+  // إتاحة الوظائف صراحةً لأزرار onclick في صفحة GitHub Pages.
+  // لا يغيّر ذلك أسماء الوظائف أو تصميم الصفحة.
+  Object.assign(window, {
+    showTrackingScreen,
+    trackRequest,
+    verifyEmp,
+    calcDuration,
+    submitRequest,
+    sendWhatsApp,
+    askPassword,
+    fetchRequest,
+    approveRequest,
+    sendAutoWhatsApp,
+    loadStats
+  });
+
+  // إظهار الأخطاء البرمجية بدل أن تبدو الأزرار وكأنها لا تستجيب.
+  window.addEventListener('error', function (event) {
+    console.error('Staff Permissions JavaScript error:', event.error || event.message);
+    const loginError = document.getElementById('loginError');
+    if (loginError && !loginError.innerText) {
+      loginError.innerText = 'حدث خطأ في تشغيل النظام. افتح Console لمعرفة التفاصيل.';
+    }
+  });
+
+  window.addEventListener('unhandledrejection', function (event) {
+    console.error('Staff Permissions async error:', event.reason);
+    const loginError = document.getElementById('loginError');
+    if (loginError && !loginError.innerText) {
+      loginError.innerText = 'تعذر إكمال العملية بسبب خطأ في الاتصال أو البيانات.';
+    }
+  });
+
 </script>
 </body>
 </html>
