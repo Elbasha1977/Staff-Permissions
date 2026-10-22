@@ -6,160 +6,47 @@
   <title>نظام الاستئذان - مدرسة أحمد بن راشد المريخي</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root { 
-      --primary: #8a1538; 
-      --primary-light: #a61b45;
-      --gold: #d4af37; 
-      --bg: #0f172a; 
-      --card-bg: rgba(255, 255, 255, 0.98);
-    }
-    
+    :root { --primary: #8a1538; --primary-light: #a61b45; --gold: #d4af37; --bg: #0f172a; --card-bg: rgba(255, 255, 255, 0.98); }
     * { box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif; }
+    body { margin: 0; padding: 20px; background: linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%); direction: rtl; color: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
     
-    body { 
-      margin: 0; padding: 20px; 
-      background: linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%);
-      direction: rtl; color: #333; 
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* الإطار المتحرك الفخم */
-    .animated-wrapper {
-      background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light));
-      background-size: 800% 800%;
-      animation: gradientBorder 6s ease infinite;
-      padding: 6px;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 650px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    @keyframes gradientBorder {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 25px 20px;
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* ترويسة النظام والشعار */
-    .header-title {
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
-    }
-    .header-title h1 {
-      color: var(--primary);
-      margin: 10px 0 5px 0;
-      font-size: 1.4rem;
-      font-weight: 800;
-    }
-    .header-title p {
-      color: #666;
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
+    .animated-wrapper { background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light)); background-size: 800% 800%; animation: gradientBorder 6s ease infinite; padding: 6px; border-radius: 20px; width: 100%; max-width: 650px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
-    /* تنسيق الشعار (بعرض الصفحة بالكامل) */
-    .school-logo-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-    .school-logo {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
-    }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 25px 20px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+    .header-title { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+    .header-title h1 { color: var(--primary); margin: 10px 0 5px 0; font-size: 1.4rem; font-weight: 800; }
+    .header-title p { color: #666; margin: 0; font-size: 0.95rem; font-weight: 600; }
+    
+    .school-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
+    .school-logo { width: 100%; max-width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
 
-    /* حقول الإدخال */
     .form-group { margin-bottom: 15px; }
-    label { 
-      display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; 
-    }
-    input, select { 
-      width: 100%; padding: 14px; 
-      border: 1px solid #ddd; border-radius: 10px; 
-      font-size: 1rem; font-family: 'Cairo', sans-serif;
-      background: #f9f9f9;
-      transition: all 0.3s ease;
-    }
-    input:focus, select:focus { 
-      border-color: var(--primary); 
-      background: white;
-      box-shadow: 0 0 0 4px rgba(138, 21, 56, 0.1); 
-      outline: none;
-    }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
+    input, select, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: 'Cairo', sans-serif; background: #f9f9f9; transition: all 0.3s ease; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(138, 21, 56, 0.1); outline: none; }
 
-    /* الأزرار */
-    .btn { 
-      padding: 14px 20px; border: none; border-radius: 10px; 
-      cursor: pointer; font-weight: 800; font-size: 1rem;
-      width: 100%; transition: all 0.3s ease;
-      font-family: 'Cairo', sans-serif;
-    }
-    .btn-primary { 
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); 
-      color: white; 
-      box-shadow: 0 4px 15px rgba(138, 21, 56, 0.3);
-    }
-    .btn-primary:hover { 
-      transform: translateY(-2px); 
-      box-shadow: 0 6px 20px rgba(138, 21, 56, 0.4);
-    }
+    .btn { padding: 14px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 1rem; width: 100%; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 4px 15px rgba(138, 21, 56, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(138, 21, 56, 0.4); }
+    .btn-wa { background: #25D366; color: white; margin-top: 10px; display: none; }
 
-    /* معلومات الموظف */
-    .emp-info-box {
-      background: #fff8f9;
-      border: 1px solid #f5d6dc;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
+    .emp-info-box { background: #fff8f9; border: 1px solid #f5d6dc; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
     .emp-info-box p { margin: 5px 0; font-size: 0.95rem; color: #555; }
     .emp-info-box strong { color: var(--primary); }
-
-    .balance-badge {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: bold;
-    }
+    .balance-badge { display: inline-block; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
 
     .hidden { display: none !important; }
     .row { display: flex; gap: 10px; }
-
-    /* لوحة الإدارة */
-    .admin-grid { 
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-      gap: 15px; margin-bottom: 20px; 
-    }
-    .stat-box { 
-      background: white; border-right: 5px solid var(--primary); 
-      padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-    }
+    
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-box { background: white; border-right: 5px solid var(--primary); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .stat-box h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #666; }
     .stat-box .value { font-size: 2rem; font-weight: bold; color: var(--primary); }
+    
+    .secret-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    .secret-btn { background: #e9ecef; color: #555; padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; font-family: 'Cairo'; font-weight: bold; transition: 0.3s; }
+    .secret-btn:hover { background: var(--primary); color: white; }
   </style>
 </head>
 <body>
@@ -169,18 +56,14 @@
     <div class="animated-wrapper" id="loginCard">
       <div class="card">
         <div class="header-title">
-          <div class="school-logo-container">
-            <img src="https://i.postimg.cc/tRm07wZF/MOTTO.png" alt="شعار المدرسة" class="school-logo">
-          </div>
+          <div class="school-logo-container"><img src="https://i.postimg.cc/tRm07wZF/MOTTO.png" alt="شعار المدرسة" class="school-logo"></div>
           <h1>نظام الاستئذان</h1>
           <p>مدرسة أحمد بن راشد المريخي الابتدائية بنين</p>
         </div>
-        
         <div class="form-group">
           <label>أدخل رقمك الوظيفي أو الشخصي</label>
           <input type="text" id="empIdInput" placeholder="مثال: 114945" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         </div>
-        
         <button class="btn btn-primary" onclick="verifyEmp()">تسجيل الدخول</button>
         <p id="loginError" style="color:#dc3545; text-align:center; margin-top:15px; font-weight:bold; font-size:0.9rem;"></p>
       </div>
@@ -188,10 +71,7 @@
 
     <div id="formScreen" class="animated-wrapper hidden">
       <div class="card">
-        <div class="header-title">
-          <h1>طلب استئذان جديد</h1>
-        </div>
-        
+        <div class="header-title"><h1>طلب استئذان جديد</h1></div>
         <div class="emp-info-box">
           <p>مرحباً، <strong><span id="empName"></span></strong></p>
           <p>المسمى: <span id="empJob"></span></p>
@@ -208,156 +88,120 @@
             <option value="مهمة رسمية">مهمة رسمية (لا يخصم)</option>
           </select>
         </div>
-
-        <div class="form-group">
-          <label>التاريخ</label>
-          <input type="date" id="permDate">
-        </div>
-
+        <div class="form-group"><label>التاريخ</label><input type="date" id="permDate"></div>
         <div class="row">
-          <div class="form-group" style="flex:1;">
-            <label>وقت الخروج</label>
-            <input type="time" id="exitTime" onchange="calcDuration()">
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>وقت العودة</label>
-            <input type="time" id="returnTime" onchange="calcDuration()">
-          </div>
+          <div class="form-group" style="flex:1;"><label>وقت الخروج</label><input type="time" id="exitTime" onchange="calcDuration()"></div>
+          <div class="form-group" style="flex:1;"><label>وقت العودة</label><input type="time" id="returnTime" onchange="calcDuration()"></div>
         </div>
-
+        <div class="form-group"><label>سبب الاستئذان</label><input type="text" id="reason" placeholder="اذكر السبب..."></div>
+        
         <div class="form-group">
-          <label>سبب الاستئذان</label>
-          <input type="text" id="reason" placeholder="اذكر السبب...">
+          <label>تغطية الحصص (اذكر الحصص التي لديك وقت الإذن)</label>
+          <textarea id="coverage" rows="2" placeholder="مثال: الحصة الثالثة - 5/1 - الأستاذ محمد"></textarea>
         </div>
 
-        <button class="btn btn-primary" onclick="submitRequest()">إرسال الطلب</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitRequest()">إرسال الطلب</button>
+        <button class="btn btn-wa" id="waBtn" onclick="sendWhatsApp()">📱 إرسال إشعار للمنسق (واتساب)</button>
         <p style="text-align:center; color:green; font-weight:bold; margin-top:15px;" id="successMsg"></p>
       </div>
     </div>
   </div>
 
-  <!-- واجهة الإدارة السرية -->
-  <div id="adminLogin" class="animated-wrapper hidden">
+  <!-- الأزرار السرية للأدوار -->
+  <div class="secret-buttons" id="secretButtons">
+    <button class="secret-btn" onclick="askPassword('coordinator')">المنسق</button>
+    <button class="secret-btn" onclick="askPassword('vp')">النائب الأكاديمي</button>
+    <button class="secret-btn" onclick="askPassword('principal')">المدير</button>
+    <button class="secret-btn" onclick="askPassword('admin')" style="font-size: 0.8rem;">⚙️ إدارة</button>
+  </div>
+
+  <!-- شاشة الاعتماد -->
+  <div id="approvalScreen" class="animated-wrapper hidden">
     <div class="card">
-      <div class="header-title">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
-        <h1>منطقة الإدارة</h1>
+      <div class="header-title"><h1 id="approvalTitle">اعتماد الطلبات</h1></div>
+      
+      <div id="searchBox">
+        <div class="form-group">
+          <label>أدخل رقم الطلب (مثال: REQ-1234)</label>
+          <input type="text" id="searchReqId" placeholder="REQ-...">
+          <button class="btn btn-primary" onclick="fetchRequest()" style="margin-top:10px;">بحث</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="adminPass" placeholder="••••••••" style="text-align:center;">
+
+      <div id="requestDetails" class="hidden" style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:20px;">
+        <h3 style="color:var(--primary); margin-top:0;">تفاصيل الطلب</h3>
+        <p><strong>الموظف:</strong> <span id="detName"></span></p>
+        <p><strong>المسمى:</strong> <span id="detJob"></span></p>
+        <p><strong>السبب:</strong> <span id="detReason"></span></p>
+        <p><strong>تغطية الحصص:</strong> <span id="detCoverage" style="color:#dc3545;"></span></p>
+        <p><strong>الحالة:</strong> <span id="detStatus" class="balance-badge"></span></p>
+        
+        <hr style="margin:15px 0;">
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" style="background:#28a745;" onclick="approveRequest('approved')">✅ موافقة</button>
+          <button class="btn btn-primary" style="background:#dc3545;" onclick="approveRequest('rejected')">❌ رفض</button>
+        </div>
+        <p id="approveMsg" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
       </div>
-      <button class="btn btn-primary" onclick="checkAdminPass()">دخول</button>
+      <button class="btn" style="background:#ccc; margin-top:15px;" onclick="location.reload()">رجوع</button>
     </div>
   </div>
 
+  <!-- لوحة الإدارة -->
   <div id="adminDashboard" class="animated-wrapper hidden" style="max-width: 800px;">
     <div class="card">
-      <div class="header-title">
-        <h1>لوحة الإحصائيات</h1>
-      </div>
+      <div class="header-title"><h1>لوحة الإحصائيات</h1></div>
       <div class="admin-grid" id="statsGrid"></div>
-      
-      <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-      
-      <h2 style="color: var(--primary); font-size: 1.1rem; margin-top: 0;">البحث عن سجل موظف</h2>
-      <div style="display:flex; gap:10px; margin-bottom: 15px;">
-        <input type="text" id="searchEmpId" placeholder="أدخل الرقم الوظيفي">
-        <button class="btn btn-primary" style="width:100px; margin-top:0;" onclick="searchHistory()">بحث</button>
-      </div>
-      <div id="historyResult"></div>
+      <button class="btn" style="background:#ccc; margin-top:15px;" onclick="location.reload()">رجوع</button>
     </div>
-  </div>
-
-  <!-- زر الإدارة السري (مخفي في الزاوية) -->
-  <div style="position:fixed; bottom:15px; left:15px; opacity:0.3; cursor:pointer; font-size: 1.5rem;" onclick="showAdminLogin()">
-    ⚙️
   </div>
 
 <script>
-  // 🔴 الرابط الخاص بك 🔴
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz9JYBX2DUKPUjXpjhQdt39YAWYki0akgEoiw74G0aBxTdXjuyV61hDs3XGaToDvXWN/exec';
+  // 🔴 تم تحديث الرابط هنا 🔴
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx6RurzgJYqgvLoTGwIhs4mgTBo63gzNsaghf94aaLwZgb31y9axkJSm7YAbKCehuQ_/exec';
   
   const JSON_URL = 'encoded_data.txt';
-  const ADMIN_PASS = "admin123";
-  let currentEmp = null;
+  
+  const PASSWORDS = {
+    coordinator: "1234", // منسق
+    vp: "5678",          // نائب
+    principal: "9999",   // مدير
+    admin: "admin123"    // إدارة
+  };
 
-  // جلب الأسماء وفك التشفير
+  let currentEmp = null;
+  let currentRole = null;
+
   async function fetchEmployees() {
     try {
       const res = await fetch(JSON_URL);
-      if (!res.ok) throw new Error("لم يتم العثور على ملف البيانات");
-      
       const b64 = await res.text();
-      const cleanB64 = b64.replace(/\s/g, '');
-      const decoded = decodeURIComponent(escape(window.atob(cleanB64)));
+      const decoded = decodeURIComponent(escape(window.atob(b64.replace(/\s/g, ''))));
       return JSON.parse(decoded);
-    } catch(e) { 
-      console.error("خطأ في جلب البيانات:", e);
-      document.getElementById('loginError').innerText = "خطأ في تحميل قاعدة البيانات. يرجى مراجعة الإدارة.";
-      return []; 
-    }
+    } catch(e) { return []; }
   }
 
-  // دالة الاتصال للرصيد فقط
-  async function apiCall(action, payload) {
-    try {
-      if (action === 'getBalance') {
-        const res = await fetch(`${API_URL}?action=getBalance&empId=${payload.empId}`);
-        return await res.json();
-      } else if (action === 'getStats') {
-        // للإحصائيات نستخدم FormData
-        const formData = new URLSearchParams();
-        formData.append('action', action);
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          body: formData,
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
-        return await res.json();
-      }
-    } catch (e) {
-      return { success: false, message: "خطأ في الاتصال بالخادم." };
-    }
-  }
-
-  // التحقق من الموظف
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
-    
-    document.getElementById('loginError').innerText = "جاري التحقق...";
-    document.getElementById('loginError').style.color = "#666";
-    
     const emps = await fetchEmployees();
-    if(emps.length === 0) return;
-
     let emp = emps.find(e => e.employeeId === id || e.personalId === id);
-
-    if(!emp) {
-      document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة.";
-      document.getElementById('loginError').style.color = "#dc3545";
-      return;
-    }
-
-    if(emp.name.includes('كريم احمد')) {
-      emp.name = "محمد عبد الله برمان الدوسري";
-      emp.jobTitle = "منسق تربية رياضية";
-    }
-
+    if(!emp) { document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; return; }
+    
+    if(emp.name.includes('كريم احمد')) { emp.name = "محمد عبد الله برمان الدوسري"; emp.jobTitle = "منسق تربية رياضية"; }
+    
     currentEmp = emp;
-    const balRes = await apiCall('getBalance', { empId: emp.employeeId });
+    const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
+    const bal = await res.json();
     
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('formScreen').classList.remove('hidden');
     document.getElementById('empName').innerText = emp.name;
     document.getElementById('empJob').innerText = emp.jobTitle;
-    document.getElementById('empBalance').innerText = (balRes.balance || 600) + " دقيقة";
-    document.getElementById('loginError').innerText = "";
+    document.getElementById('empBalance').innerText = (bal.balance || 600) + " دقيقة";
     document.getElementById('permDate').valueAsDate = new Date();
   }
 
-  // حساب المدة
   function calcDuration() {
     const exit = document.getElementById('exitTime').value;
     const ret = document.getElementById('returnTime').value;
@@ -371,92 +215,128 @@
     return 0;
   }
 
-  // إرسال الطلب (بطريقة الـ iframe المخفي لتجاوز CORS)
   function submitRequest() {
     const date = document.getElementById('permDate').value;
     if(!date) { alert("يرجى تحديد التاريخ"); return; }
-
     const duration = calcDuration();
+    
     const data = {
-      empId: currentEmp.employeeId,
-      name: currentEmp.name,
-      jobTitle: currentEmp.jobTitle,
-      permissionType: document.getElementById('permType').value,
-      date: date,
-      exitTime: document.getElementById('exitTime').value,
-      returnTime: document.getElementById('returnTime').value,
-      reason: document.getElementById('reason').value,
+      empId: currentEmp.employeeId, name: currentEmp.name, jobTitle: currentEmp.jobTitle,
+      permissionType: document.getElementById('permType').value, date: date,
+      exitTime: document.getElementById('exitTime').value, returnTime: document.getElementById('returnTime').value,
+      reason: document.getElementById('reason').value, coverage: document.getElementById('coverage').value,
       duration: duration
     };
 
     document.getElementById('successMsg').innerText = "جاري الحفظ...";
-    document.getElementById('successMsg').style.color = "#666";
+    document.getElementById('submitBtn').disabled = true;
 
-    // إنشاء iframe مخفي
     const iframeName = 'hidden_iframe_' + Date.now();
     const iframe = document.createElement('iframe');
-    iframe.name = iframeName;
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    iframe.name = iframeName; iframe.style.display = 'none'; document.body.appendChild(iframe);
 
-    // إنشاء النموذج
     const form = document.createElement('form');
-    form.action = API_URL;
-    form.method = 'POST';
-    form.target = iframeName;
-    form.style.display = 'none';
+    form.action = API_URL; form.method = 'POST'; form.target = iframeName; form.style.display = 'none';
 
     const formData = new URLSearchParams();
     formData.append('action', 'submit');
     formData.append('data', JSON.stringify(data));
 
     for (const [key, value] of formData.entries()) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
+      const input = document.createElement('input'); input.type = 'hidden'; input.name = key; input.value = value; form.appendChild(input);
     }
+    document.body.appendChild(form); form.submit();
 
-    document.body.appendChild(form);
-    form.submit();
-
-    // إظهار رسالة النجاح بعد ثانيتين
     setTimeout(() => {
-      document.getElementById('successMsg').innerText = `✅ تم الحفظ بنجاح! (يرجى مراجعة الشيت لتأكيد الطلب)`;
-      document.getElementById('successMsg').style.color = "#28a745";
-      document.getElementById('reason').value = "";
-      
-      // تنظيف العناصر المؤقتة
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-      
-      verifyEmp(); // تحديث الرصيد
+      document.getElementById('successMsg').innerText = `✅ تم الحفظ بنجاح!`;
+      document.getElementById('waBtn').style.display = 'block'; 
+      document.body.removeChild(form); document.body.removeChild(iframe);
+      verifyEmp(); 
     }, 2000);
   }
 
-  // ================== لوحة الإدارة ==================
-  function showAdminLogin() {
-    document.getElementById('employeePortal').classList.add('hidden');
-    document.getElementById('adminDashboard').classList.add('hidden');
-    document.getElementById('adminLogin').classList.remove('hidden');
+  function sendWhatsApp() {
+    // ضع رقم المنسق هنا
+    const coordinatorPhone = "97433337801"; 
+    
+    const msg = `السلام عليكم،\nالمعلم: ${currentEmp.name}\nقدّم طلب استئذان جديد.\nنوع الإذن: ${document.getElementById('permType').value}\nتغطية الحصص: ${document.getElementById('coverage').value}`;
+    
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const url = isMobile ? `whatsapp://send?phone=${coordinatorPhone}&text=${encodeURIComponent(msg)}` : `https://web.whatsapp.com/send?phone=${coordinatorPhone}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
   }
 
-  function checkAdminPass() {
-    if (document.getElementById('adminPass').value === ADMIN_PASS) {
-      document.getElementById('adminLogin').classList.add('hidden');
-      document.getElementById('adminDashboard').classList.remove('hidden');
-      loadStats();
-    } else { alert("كلمة المرور خاطئة"); }
+  function askPassword(role) {
+    const pass = prompt("أدخل كلمة المرور الخاصة بك:");
+    if (pass === PASSWORDS[role]) {
+      currentRole = role;
+      document.getElementById('employeePortal').classList.add('hidden');
+      document.getElementById('secretButtons').classList.add('hidden');
+      
+      if (role === 'admin') {
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        loadStats();
+      } else {
+        document.getElementById('approvalScreen').classList.remove('hidden');
+        document.getElementById('approvalTitle').innerText = role === 'coordinator' ? 'اعتماد المنسق' : (role === 'vp' ? 'اعتماد النائب الأكاديمي' : 'الاعتماد النهائي (المدير)');
+      }
+    } else {
+      alert("كلمة المرور خاطئة!");
+    }
+  }
+
+  async function fetchRequest() {
+    const reqId = document.getElementById('searchReqId').value.trim();
+    if(!reqId) return;
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'getRequest'); formData.append('reqId', reqId);
+
+    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const result = await res.json();
+
+    if(result.success) {
+      document.getElementById('requestDetails').classList.remove('hidden');
+      document.getElementById('detName').innerText = result.data.name;
+      document.getElementById('detJob').innerText = result.data.jobTitle;
+      document.getElementById('detReason').innerText = result.data.reason;
+      document.getElementById('detCoverage').innerText = result.data.coverage || "لا يوجد";
+      document.getElementById('detStatus').innerText = result.data.status;
+      document.getElementById('searchReqId').dataset.currentId = reqId;
+    } else {
+      alert(result.message);
+    }
+  }
+
+  async function approveRequest(decision) {
+    const reqId = document.getElementById('searchReqId').dataset.currentId;
+    if(!reqId) return;
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'updateStatus'); formData.append('reqId', reqId);
+    formData.append('role', currentRole); formData.append('decision', decision);
+
+    document.getElementById('approveMsg').innerText = "جاري الحفظ...";
+    
+    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const result = await res.json();
+
+    if(result.success) {
+      document.getElementById('approveMsg').innerText = `✅ تم تسجيل القرار: ${result.newStatus}`;
+      document.getElementById('approveMsg').style.color = "#28a745";
+    }
   }
 
   async function loadStats() {
-    const res = await apiCall('getStats', {});
-    if(res.success) {
+    const formData = new URLSearchParams();
+    formData.append('action', 'getStats');
+    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const result = await res.json();
+    if(result.success) {
       document.getElementById('statsGrid').innerHTML = `
-        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${res.total}</div></div>
-        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${res.academic}</div></div>
-        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${res.admin}</div></div>
+        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${result.total}</div></div>
+        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${result.academic}</div></div>
+        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${result.admin}</div></div>
       `;
     }
   }
