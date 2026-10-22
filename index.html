@@ -214,23 +214,19 @@
   
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
 
-  // 🔴 ضع أرقام المنسقين الفعلية هنا (بصيغة دولية) 🔴
+  // 🔴 تم إصلاح الأرقام وإزالة المسافات الزائدة 🔴
   const COORDINATORS_PHONES = {
-    'عربي': '97455229732',        
-    'انجليزي': '97455742864',   
-         'منسق علوم شرعية': '97450562783',   
-
-    'رياضيات': '97430066844',     
-    'علوم': '97455946775',        
-    'اجتماعيات': '97430054477
-',   
-    'فنون': '97431007224
-',        
-    'تكنولوجيا': '97450567579
-',   
-    'رياضية': '97430700530',      
-    'default': '97433337801'      
+    'عربي': '97455229732',
+    'انجليزي': '97455742864',
+    'رياضيات': '97430066844',
+    'علوم': '97455946775',
+    'اجتماعيات': '97430054477',
+    'فنون': '97431007224',
+    'تكنولوجيا': '97450567579',
+    'رياضية': '97430700530',
+    'default': '97433337801'
   };
+  
   const VP_PHONE = "97433337801"; 
 
   let currentEmp = null;
@@ -326,9 +322,9 @@
     currentEmp = emp;
     let job = (emp.jobTitle || "").toLowerCase();
 
-    // التوجيه الذكي بناءً على المسمى الوظيفي
+    // التوجيه الذكي
     if (job.includes('انجليزي') || job.includes('إنجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
-    else if (job.includes('عربي') || job.includes('عربية')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
+    else if (job.includes('عربي') || job.includes('عربية') || job.includes('شرعية')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
     else if (job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
     else if (job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
     else if (job.includes('اجتماع') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
