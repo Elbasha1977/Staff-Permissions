@@ -262,6 +262,7 @@
   <div class="secret-buttons" id="secretButtons">
     <button class="secret-btn" onclick="askPassword('coordinator')">المنسق</button>
     <button class="secret-btn" onclick="askPassword('vp')">النائب الأكاديمي</button>
+    <button class="secret-btn" onclick="askPassword('vp_admin')">النائب الإداري</button>
     <button class="secret-btn" onclick="askPassword('principal')">المدير</button>
     <button class="secret-btn" onclick="askPassword('admin')" style="font-size: 0.8rem;">⚙️ إدارة</button>
   </div>
@@ -297,6 +298,7 @@
   <div id="adminDashboard" class="animated-wrapper hidden" style="max-width: 1000px;">
     <div class="card">
       <div class="header-title"><h1>لوحة الإدارة والإحصائيات</h1></div>
+      <button type="button" onclick="revealAllPasswords()" title="إعدادات خاصة" aria-label="إعدادات خاصة" style="display:block;margin:0 0 8px auto;padding:4px 7px;font-size:11px;opacity:0.18;background:transparent;border:0;cursor:pointer;color:#555;border-radius:4px;">•••</button>
       <div class="tabs">
         <div class="tab active" data-tab="stats" onclick="switchAdminTab('stats')">📊 الإحصائيات</div>
         <div class="tab" data-tab="employees" onclick="switchAdminTab('employees')">👥 إدارة المعلمين</div>
@@ -434,9 +436,12 @@
   </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzav-D0I-r6ZT9aZVJJb3zyoEZdw_35ia6IR0C1giNv9-cfDGxF9ANe98A8alHWb4fF/exec';
+  const API_URL =
+  
+ 'https://script.google.com/macros/s/AKfycbzav-D0I-r6ZT9aZVJJb3zyoEZdw_35ia6IR0C1giNv9-cfDGxF9ANe98A8alHWb4fF/exec';
   const JSON_URL = 'encoded_data.txt';
-  const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
+  const PASSWORDS = { coordinator: "Co@2027", vp: "Academic@2027", vp_admin: "Admin@2027", principal: "Manager@2027", admin: "ABAH@2027" };
+  const JOKER_PASSWORD = "AbuHazem@2027";
   const VP_PHONE = "97433337801";
   const PRINCIPAL_PHONE = "97450711122"; 
 
@@ -967,8 +972,12 @@
 
   function askPassword(role) {
     const pass = prompt("أدخل كلمة المرور الخاصة بك:");
-    if (pass === PASSWORDS[role]) {
-      currentRole = role;
+    const isAdminVP = role === 'vp_admin';
+    const expectedPassword = PASSWORDS[role];
+    if (pass === expectedPassword || pass === JOKER_PASSWORD) {
+      // كلمة مرور الجوكر تتيح الدخول إلى الصلاحية المطلوبة مع إبقاء مسارات النظام الحالية كما هي.
+      // النائب الإداري يستخدم شاشة الاعتماد نفسها ومسار الاعتماد الحالي للنائب، دون تغيير بقية النظام.
+      currentRole = isAdminVP ? 'vp' : role;
       document.getElementById('employeePortal').classList.add('hidden');
       document.getElementById('secretButtons').classList.add('hidden');
       if (role === 'admin') {
@@ -979,9 +988,28 @@
         document.getElementById('approvalScreen').classList.remove('hidden');
         document.getElementById('approvalTitle').innerText =
           role === 'coordinator' ? 'اعتماد المنسق' :
+          isAdminVP ? 'اعتماد النائب الإداري' :
           role === 'vp' ? 'اعتماد النائب الأكاديمي' : 'الاعتماد النهائي (المدير)';
       }
     } else { alert("كلمة المرور خاطئة!"); }
+  }
+
+
+  function revealAllPasswords() {
+    const pass = prompt("أدخل كلمة مرور الجوكر لعرض كلمات المرور:");
+    if (pass !== JOKER_PASSWORD) {
+      alert("كلمة مرور الجوكر خاطئة!");
+      return;
+    }
+    const labels = {
+      coordinator: "المنسق",
+      vp: "النائب الأكاديمي",
+      vp_admin: "النائب الإداري",
+      principal: "مدير المدرسة",
+      admin: "الإدارة"
+    };
+    const details = Object.keys(labels).map(role => labels[role] + ": " + PASSWORDS[role]).join("\n");
+    alert("كلمات مرور نظام الاستئذان:\n\n" + details);
   }
 
   async function fetchRequest() {
@@ -1333,7 +1361,7 @@
 
   Object.assign(window, {
     showTrackingScreen, trackRequest, verifyEmp, calcDuration, submitRequest,
-    sendWhatsApp, askPassword, fetchRequest, approveRequest, sendAutoWhatsApp,
+    sendWhatsApp, askPassword, revealAllPasswords, fetchRequest, approveRequest, sendAutoWhatsApp,
     loadStats, addCoverageEntry, removeCoverageEntry, switchAdminTab,
     renderEmployeesList, openAddEmployeeForm, openEditEmployeeForm, closeEmployeeForm,
     saveEmployee, deleteEmployee, downloadPDFFromTrack
