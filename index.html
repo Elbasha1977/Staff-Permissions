@@ -5,25 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام الاستئذان - مدرسة أحمد بن راشد المريخي</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
-  <!-- مكتبة تحويل HTML إلى PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root { --primary: #8a1538; --primary-light: #a61b45; --gold: #d4af37; --bg: #0f172a; --card-bg: rgba(255, 255, 255, 0.98); }
     * { box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif; }
     body { margin: 0; padding: 20px; background: linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%); direction: rtl; color: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    
     .animated-wrapper { background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light)); background-size: 800% 800%; animation: gradientBorder 6s ease infinite; padding: 6px; border-radius: 20px; width: 100%; max-width: 650px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    
     .card { background: var(--card-bg); border-radius: 14px; padding: 25px 20px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
     .header-title { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
     .header-title h1 { color: var(--primary); margin: 10px 0 5px 0; font-size: 1.4rem; font-weight: 800; }
     .header-title p { color: #666; margin: 0; font-size: 0.95rem; font-weight: 600; }
+    
     .school-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
     .school-logo { width: 100%; max-width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
+
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
     input, select, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: 'Cairo', sans-serif; background: #f9f9f9; transition: all 0.3s ease; }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(138, 21, 56, 0.1); outline: none; }
     input:disabled, select:disabled { background: #eee; color: #888; }
+    
     .btn { padding: 14px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 1rem; width: 100%; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
     .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 4px 15px rgba(138, 21, 56, 0.3); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(138, 21, 56, 0.4); }
@@ -32,20 +36,25 @@
     .btn-danger { background: #dc3545; color: white; }
     .btn-success { background: #28a745; color: white; }
     .btn-sm { padding: 8px 12px; font-size: 0.85rem; width: auto; }
+    
     .emp-info-box { background: #fff8f9; border: 1px solid #f5d6dc; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
     .emp-info-box p { margin: 5px 0; font-size: 0.95rem; color: #555; }
     .emp-info-box strong { color: var(--primary); }
     .balance-badge { display: inline-block; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+    
     .hidden { display: none !important; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
     .row > * { flex: 1; min-width: 140px; }
+    
     .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .stat-box { background: white; border-right: 5px solid var(--primary); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .stat-box h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #666; }
     .stat-box .value { font-size: 2rem; font-weight: bold; color: var(--primary); }
+    
     .secret-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
     .secret-btn { background: #e9ecef; color: #555; padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; font-family: 'Cairo'; font-weight: bold; transition: 0.3s; }
     .secret-btn:hover { background: var(--primary); color: white; }
+    
     .status-track { display: flex; justify-content: space-between; margin: 20px 0; position: relative; }
     .status-track::before { content: ''; position: absolute; top: 15px; left: 10%; right: 10%; height: 4px; background: #e0e0e0; z-index: 1; }
     .status-step { position: relative; z-index: 2; text-align: center; width: 22%; }
@@ -55,20 +64,26 @@
     .status-step p { font-size: 0.75rem; margin: 0; font-weight: bold; color: #777; }
     .status-step.active p { color: var(--primary); }
     .status-step.rejected p { color: #dc3545; }
+    
     table.data-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; }
     table.data-table th, table.data-table td { padding: 8px; border: 1px solid #ddd; }
     table.data-table thead { background: #eef2f7; }
     table.data-table tr:nth-child(even) { background: #f9f9f9; }
+    
     .coverage-entry { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
     .coverage-entry h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 0.95rem; }
+    
     .checkbox-row { display: flex; align-items: flex-start; gap: 8px; background: #fff8f9; padding: 12px; border-radius: 10px; border: 1px solid #f5d6dc; margin-bottom: 12px; }
     .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; }
     .checkbox-row label { margin: 0; font-size: 0.9rem; color: #444; }
+    
     .tabs { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
     .tab { padding: 8px 14px; border-radius: 8px; background: #eee; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
     .tab.active { background: var(--primary); color: white; }
+    
     .employee-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 8px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
     .employee-row > span { flex: 1; min-width: 100px; }
+    
     .error-msg { color: #dc3545; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px; }
     .success-msg { color: #28a745; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px; }
 
@@ -129,8 +144,6 @@
             <div class="status-step" id="step4"><div class="status-circle">4</div><p>المدير</p></div>
           </div>
           <p id="trkNote" style="text-align:center; font-weight:bold; margin-top:15px;"></p>
-          
-          <!-- زر تحميل PDF يظهر هنا إذا تمت الموافقة النهائية -->
           <button class="btn btn-primary hidden" id="trackPdfBtn" style="background:#17a2b8; margin-top:15px;" onclick="downloadPDFFromTrack()">📄 تحميل ورقة الإذن (PDF)</button>
         </div>
       </div>
@@ -142,7 +155,7 @@
         <div class="emp-info-box" id="empFullInfo"></div>
 
         <div class="form-group" id="subjectGroup">
-          <label for="subjectSelect">المادة الدراسية (لتحيد منسق المادة)</label>
+          <label for="subjectSelect">المادة الدراسية (لتحديد منسق المادة)</label>
           <select id="subjectSelect" required>
             <option value="">-- اختر المادة --</option>
             <option value="اللغة العربية">اللغة العربية</option>
@@ -176,7 +189,6 @@
         </div>
         <div class="form-group"><label>سبب الاستئذان</label><input type="text" id="reason" placeholder="اذكر السبب..."></div>
 
-        <!-- تغطية الحصص -->
         <div class="form-group">
           <label>تغطية الحصص (أضف حصة واحدة على الأقل)</label>
           <div id="coverageEntries"></div>
@@ -185,9 +197,7 @@
 
         <div class="checkbox-row">
           <input type="checkbox" id="teacherConsent">
-          <label for="teacherConsent">
-            أتعهد بأن المعلم البديل <strong>موافق</strong> على تغطية/تبديل الحصة المذكورة أعلاه، وأتحمل مسؤولية صحة البيانات.
-          </label>
+          <label for="teacherConsent">أتعهد بأن المعلم البديل <strong>موافق</strong> على تغطية/تبديل الحصة المذكورة أعلاه، وأتحمل مسؤولية صحة البيانات.</label>
         </div>
 
         <button class="btn btn-primary" id="submitBtn" onclick="submitRequest()">إرسال الطلب</button>
@@ -284,7 +294,6 @@
     </div>
   </div>
 
-  <!-- القالب المخفي للـ PDF -->
   <div id="pdf-template" class="hidden">
     <div class="pdf-header">
       <div>
@@ -358,7 +367,6 @@
       <div class="pdf-sig-box" style="border: 2px solid #8a1538;">
         <div class="pdf-sig-title">مدير المدرسة</div>
         <div style="color:green; font-size:0.8rem; margin-top:5px;">مقبول نهائياً</div>
-        <!-- جلب التوقيع من ملف signature.png المرفوع على GitHub -->
         <img src="signature.png" class="pdf-sig-img" alt="توقيع">
       </div>
     </div>
@@ -369,7 +377,7 @@
   </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzO-7XDicKM_xnvT789Q7ajjMK4O5NjGeHO1etHtryyVAjTn3JcIZWCRVzp81KnxIf4/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx4alk6eQFzteNzcM4dCp56cxdQAG0o8wWH6KcKcwJhqQNKoqMyZtwaOpE8VLxt0ds/exec';
   const JSON_URL = 'encoded_data.txt';
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
   const VP_PHONE = "97433337801";
@@ -382,15 +390,13 @@
   const PERIODS = ["الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة", "السابعة"];
 
   let ALL_EMPLOYEES = [];
-  let SUBJECT_COORDINATORS = {}; // يبنى ديناميكياً من ALL_EMPLOYEES
-
+  let SUBJECT_COORDINATORS = {};
   let currentEmp = null;
   let currentRole = null;
   let savedReqId = "";
   let coverageCounter = 0;
   let currentTrackedData = null;
 
-  // تحميل بيانات الموظفين
   async function loadAllEmployees() {
     try {
       const res = await fetch(JSON_URL, { cache: 'no-store' });
@@ -403,14 +409,12 @@
       buildCoordinatorMap();
       return ALL_EMPLOYEES;
     } catch(e) {
-      console.error('loadAllEmployees:', e);
       const errorEl = document.getElementById('loginError');
       if (errorEl) errorEl.innerText = 'تعذر تحميل بيانات الموظفين. تأكد من وجود encoded_data.txt.';
       return [];
     }
   }
 
-  // بناء خريطة المنسقين
   function buildCoordinatorMap() {
     SUBJECT_COORDINATORS = {};
     SUBJECTS.forEach(subject => {
@@ -433,16 +437,11 @@
       if (coord && coord.phone) {
         const phone = String(coord.phone).replace(/[^0-9]/g, '');
         const full = phone.startsWith('974') ? phone : ('974' + phone);
-        SUBJECT_COORDINATORS[subject] = {
-          phone: full,
-          name: coord.name,
-          employeeId: coord.employeeId
-        };
+        SUBJECT_COORDINATORS[subject] = { phone: full, name: coord.name, employeeId: coord.employeeId };
       }
     });
   }
 
-  // 1. تتبع الطلب
   function showTrackingScreen() {
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('trackScreen').classList.remove('hidden');
@@ -495,7 +494,6 @@
     } catch(e) { alert("خطأ في الاتصال بالخادم"); }
   }
 
-  // 2. تسجيل الدخول
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
@@ -525,9 +523,7 @@
     }
     if (subjectGroup) subjectGroup.style.display = sendDirectlyToVP ? 'none' : 'block';
     if (routingNote) {
-      routingNote.innerText = sendDirectlyToVP
-        ? 'سيُرسل إشعار واتساب مباشرة إلى النائب الأكاديمي.'
-        : 'اختر المادة ليُرسل إشعار واتساب إلى منسقها الصحيح.';
+      routingNote.innerText = sendDirectlyToVP ? 'سيُرسل إشعار واتساب مباشرة إلى النائب الأكاديمي.' : 'اختر المادة ليُرسل إشعار واتساب إلى منسقها الصحيح.';
     }
 
     let balance = 600;
@@ -557,7 +553,6 @@
     }
   }
 
-  // 3. تغطية الحصص
   function addCoverageEntry() {
     coverageCounter++;
     const idx = coverageCounter;
@@ -628,7 +623,6 @@
     return 0;
   }
 
-  // 4. إرسال الطلب
   function submitRequest() {
     const date = document.getElementById('permDate').value;
     if(!date) { alert("يرجى تحديد التاريخ"); return; }
@@ -640,7 +634,7 @@
 
     const coverageArr = collectCoverageData();
     if (coverageArr.length === 0) {
-      alert("يرجى إضافة حصة تغطية واحدة على الأقل على الأقل (بجميع بياناتها).");
+      alert("يرجى إضافة حصة تغطية واحدة على الأقل (بجميع بياناتها).");
       return;
     }
 
@@ -700,7 +694,6 @@
     }, 2500);
   }
 
-  // 5. إرسال واتساب
   function sendWhatsApp() {
     if (!currentEmp) { alert('يرجى تسجيل الدخول أولاً.'); return; }
 
@@ -724,7 +717,7 @@
       }
       const coordInfo = SUBJECT_COORDINATORS[subject];
       if (!coordInfo || !coordInfo.phone) {
-        alert(`لم يتم العثور على منسق مادة "${subject}" في بيانات المدرسة. تأكد من وجود منسق حقيقي على كلمة "منسق" واسم المادة.`);
+        alert(`لم يتم العثور على منسق مادة "${subject}" في بيانات المدرسة.`);
         return;
       }
       recipientPhone = coordInfo.phone;
@@ -745,7 +738,6 @@
     window.open(url, '_blank');
   }
 
-  // 6. الاعتماد
   function askPassword(role) {
     const pass = prompt("أدخل كلمة المرور الخاصة بك:");
     if (pass === PASSWORDS[role]) {
@@ -810,7 +802,6 @@
     window.open(url, '_blank');
   }
 
-  // 7. الإدارة
   function switchAdminTab(tab) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
@@ -834,70 +825,11 @@
         <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${Number(result.academic || 0)}</div></div>
         <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${Number(result.admin || 0)}</div></div>
       `;
-
-      const teachers = Array.isArray(result.teacherStats) ? result.teacherStats
-                       : (Array.isArray(result.teachers) ? result.teachers : []);
-      if (teachers.length) {
-        const rows = teachers.map(t => {
-          const balance = (t.remainingBalance ?? t.remaining ?? t.balance);
-          const exceeded = t.exceeded === true || (balance != null && Number(balance) <= 0);
-          return `<tr>
-            <td>${escapeHtml(t.name || t.teacher || 'غير محدد')}</td>
-            <td>${escapeHtml(t.jobTitle || '')}</td>
-            <td>${Number(t.count ?? t.totalRequests ?? t.requests ?? 0)}</td>
-            <td>${Number(t.usedMinutes ?? t.used ?? t.totalMinutes ?? 0)}</td>
-            <td>${balance == null ? 'غير متاح' : Number(balance) + ' دقيقة'}</td>
-            <td style="color:${exceeded ? '#dc3545' : '#28a745'};font-weight:bold;">${exceeded ? 'نعم' : 'لا'}</td>
-          </tr>`;
-        }).join('');
-        document.getElementById('teacherStatsWrap').innerHTML = `
-          <div style="overflow-x:auto;margin-top:15px;">
-            <h3>تفاصيل استئذانات المعلمين</h3>
-            <table class="data-table">
-              <thead><tr>
-                <th>المعلم</th><th>المسمى</th><th>عدد الطلبات</th>
-                <th>الدقائق المستخدمة</th><th>الرصيد المتبقي</th><th>نفد الرصيد؟</th>
-              </tr></thead><tbody>${rows}</tbody>
-            </table>
-          </div>`;
-      }
-
-      const rankings = result.rankings || {};
-      const most = Array.isArray(rankings.mostRequests) ? rankings.mostRequests : [];
-      const mostMinutes = Array.isArray(rankings.mostMinutes) ? rankings.mostMinutes : [];
-      const exhausted = Array.isArray(rankings.exhausted) ? rankings.exhausted : [];
-
-      let rankHtml = '';
-      if (most.length) {
-        rankHtml += `<div style="margin-top:15px;"><h3>🏆 الأكثر تقديماً لطلبات الاستئذان</h3><ol>${
-          most.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.count || 0)} طلب</li>`).join('')
-        }</ol></div>`;
-      }
-      if (mostMinutes.length) {
-        rankHtml += `<div style="margin-top:15px;"><h3>⏱️ الأكثر استهلاكاً للدقائق</h3><ol>${
-          mostMinutes.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.minutes || 0)} دقيقة</li>`).join('')
-        }</ol></div>`;
-      }
-      if (exhausted.length) {
-        rankHtml += `<div style="margin-top:15px;"><h3>⚠️ من نفد رصيده</h3><ul>${
-          exhausted.map(x => `<li>${escapeHtml(x.name || 'غير محدد')}</li>`).join('')
-        }</ul></div>`;
-      }
-      document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend', rankHtml);
-
-      if (!teachers.length && !most.length && !exhausted.length) {
-        document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend',
-          `<div style="background:#fff8e1;padding:14px;border-radius:8px;margin-top:12px;">
-            <strong>لا توجد تفاصيل كافية من الخادم.</strong>
-            <p>تأكد أن يعيد Code.gs الحقول teacherStats و rankings لتفعيل التحليل التفيصي.</p>
-          </div>`);
-      }
     } catch (e) {
       grid.innerHTML = `<p style="color:#b00020;">تعذر تحميل الإحصائيات: ${escapeHtml(e.message || String(e))}</p>`;
     }
   }
 
-  // 8. إدارة المعلمين
   function renderEmployeesList() {
     const query = (document.getElementById('empSearchInput')?.value || '').trim().toLowerCase();
     const list = document.getElementById('employeesList');
@@ -986,7 +918,7 @@
       const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
       const result = await res.json();
       if (result.success) {
-        document.getElementById('empFormMsg').innerText = '✅ تم الحفظ بنجاح. سيُحدَّث ملف EOF عند إعادة تحميل الصفحة.';
+        document.getElementById('empFormMsg').innerText = '✅ تم الحفظ بنجاح.';
         document.getElementById('empFormMsg').style.color = '#28a745';
         setTimeout(() => closeEmployeeForm(), 1500);
       } else {
@@ -1018,7 +950,7 @@
     }
   }
 
-  // 9. دالة تحميل الـ PDF
+  // 9. دالة تحميل الـ PDF (تم إصلاح مشكلة الأرقام وتفعيل قراءة العربية)
   function downloadPDFFromTrack() {
     if(!currentTrackedData) return;
     document.getElementById('pdf-name').innerText = currentTrackedData.name;
@@ -1038,8 +970,12 @@
     const opt = {
       margin:       0,
       filename:     `استئذان_${currentTrackedData.name}_${currentTrackedData.reqId}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
+      image:        { type: 'jpeg', quality: 1.0 },
+      html2canvas:  { 
+        scale: 3, 
+        useCORS: true, 
+        letterRendering: true 
+      },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
@@ -1048,7 +984,6 @@
     });
   }
 
-  // أدوات
   function escapeHtml(v) {
     return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
