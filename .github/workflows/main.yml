@@ -18,25 +18,28 @@ jobs:
 
       - name: Decode and Prepare Files
         run: |
-          # 1. فك تشفير جزئي الواجهة ودمجهما
-          echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > index_part1.html
-          echo -n "${{ secrets.INDEX_PART_2 }}" | base64 --decode > index_part2.html
-          cat index_part1.html index_part2.html > index.html
-          rm index_part1.html index_part2.html
+          # 1. فك تشفير الأجزاء الثلاثة
+          echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > p1.html
+          echo -n "${{ secrets.INDEX_PART_2 }}" | base64 --decode > p2.html
+          echo -n "${{ secrets.INDEX_PART_3 }}" | base64 --decode > p3.html
           
-          # 2. فك تشفير ملف الأسماء
+          # 2. دمج الأجزاء الثلاثة بالترتيب
+          cat p1.html p2.html p3.html > index.html
+          rm p1.html p2.html p3.html
+          
+          # 3. فك تشفير ملف الأسماء
           echo -n "${{ secrets.STUDENTS_PART_1 }}" | base64 --decode > data.json
           
-          # 3. إعادة تشفير الأسماء بدون فواصل أسطر
+          # 4. إعادة تشفير الأسماء بدون فواصل أسطر
           base64 -w 0 data.json > encoded_data.txt
           
-          # 4. حذف الملف الأصلي
+          # 5. حذف الملف الأصلي
           rm data.json
           
-          # 5. التحقق من نجاح الدمج (اختياري لكن مفيد)
+          # 6. التحقق من نجاح الدمج
           echo "=== حجم index.html ==="
           wc -c index.html
-          echo "=== آخر 3 أسطر من index.html (للتأكد من اكتمال الملف) ==="
+          echo "=== آخر 3 أسطر من index.html ==="
           tail -n 3 index.html
 
       - name: Deploy to GitHub Pages
