@@ -18,8 +18,11 @@ jobs:
 
       - name: Decode and Prepare Files
         run: |
-          # 1. فك تشفير ملف الواجهة (جزء واحد)
-          echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > index.html
+          # 1. فك تشفير جزئي الواجهة ودمجهما
+          echo -n "${{ secrets.INDEX_PART_1 }}" | base64 --decode > index_part1.html
+          echo -n "${{ secrets.INDEX_PART_2 }}" | base64 --decode > index_part2.html
+          cat index_part1.html index_part2.html > index.html
+          rm index_part1.html index_part2.html
           
           # 2. فك تشفير ملف الأسماء
           echo -n "${{ secrets.STUDENTS_PART_1 }}" | base64 --decode > data.json
@@ -30,13 +33,11 @@ jobs:
           # 4. حذف الملف الأصلي
           rm data.json
           
-          # 5. التحقق من نجاح فك التشفير
+          # 5. التحقق من نجاح الدمج (اختياري لكن مفيد)
           echo "=== حجم index.html ==="
           wc -c index.html
-          echo "=== آخر 3 أسطر من index.html ==="
+          echo "=== آخر 3 أسطر من index.html (للتأكد من اكتمال الملف) ==="
           tail -n 3 index.html
-          echo "=== حجم encoded_data.txt ==="
-          wc -c encoded_data.txt
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
