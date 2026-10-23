@@ -191,6 +191,7 @@
             <option value="تكنولوجيا المعلومات">تكنولوجيا المعلومات</option>
             <option value="العلوم الشرعية">العلوم الشرعية</option>
             <option value="أخرى">أخرى / لا تنطبق</option>
+            <option value="كادر إداري">كادر إداري</option>
           </select>
           <small id="routingNote" style="display:block;color:#52606d;margin-top:6px;">سيُرسل إشعار واتساب إلى منسق المادة المختار.</small>
         </div>
@@ -212,15 +213,26 @@
         </div>
         <div class="form-group"><label>سبب الاستئذان</label><input type="text" id="reason" placeholder="اذكر السبب..."></div>
 
-        <div class="form-group">
+        <div class="form-group" id="classCoverageGroup">
           <label>تغطية الحصص (أضف حصة واحدة على الأقل)</label>
           <div id="coverageEntries"></div>
           <button type="button" class="btn btn-outline btn-sm" onclick="addCoverageEntry()" style="margin-top:8px;">➕ إضافة حصة تغطية</button>
         </div>
 
-        <div class="checkbox-row">
+        <div class="form-group hidden" id="adminCoverageGroup">
+          <label for="adminCoverageDetails">تغطية العمل الإداري</label>
+          <textarea id="adminCoverageDetails" rows="3" placeholder="اكتب الأعمال الإدارية التي سيتولاها الموظف البديل أثناء فترة الاستئذان..."></textarea>
+          <label for="adminSubstituteSelect" style="margin-top:10px;">الموظف الإداري البديل</label>
+          <select id="adminSubstituteSelect"><option value="">-- اختر الموظف الإداري البديل --</option></select>
+        </div>
+
+        <div class="checkbox-row" id="teacherConsentRow">
           <input type="checkbox" id="teacherConsent">
           <label for="teacherConsent">أتعهد بأن المعلم البديل <strong>موافق</strong> على تغطية/تبديل الحصة المذكورة أعلاه، وأتحمل مسؤولية صحة البيانات.</label>
+        </div>
+        <div class="checkbox-row hidden" id="adminConsentRow">
+          <input type="checkbox" id="adminConsent">
+          <label for="adminConsent">أؤكد التنسيق مع الموظف الإداري البديل وتوضيح الأعمال الإدارية المطلوب تغطيتها.</label>
         </div>
 
         <button class="btn btn-primary" id="submitBtn" onclick="submitRequest()">إرسال الطلب</button>
@@ -360,7 +372,7 @@
       </tr>
     </table>
 
-    <div style="font-weight:bold; color:#8a1538; margin-bottom:10px;">جدول تغطية الحصص:</div>
+    <div id="pdf-coverage-title" style="font-weight:bold; color:#8a1538; margin-bottom:10px;">جدول تغطية الحصص:</div>
     <table class="pdf-table">
       <tr>
         <th>الحصة</th>
@@ -400,7 +412,7 @@
   </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz9gS7EfzQ7SDYBB41H6AZsAP4GwKNQT5zPMO38r9Lcs3BIvgNeqvGEXS60fCk1ghpN/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxUDnNlNcWQr41glwSlRYZIseenl0IA6DNOuxQVrsa6ps3zGW3JW5EmKKp9FOgJCXw3/exec';
   const JSON_URL = 'encoded_data.txt';
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
   const VP_PHONE = "97433337801";
@@ -517,6 +529,46 @@
     } catch(e) { alert("خطأ في الاتصال بالخادم"); }
   }
 
+  function isTeacherOrCoordinator(emp) {
+    const job = String(emp && emp.jobTitle || '').trim();
+    // استبعاد الكادر الإداري من قائمة بدلاء الحصص، وإبقاء المعلمين والمنسقين.
+    return /معلم|معلمة|مدرس|مدرسة|منسق|منسقة/i.test(job);
+  }
+
+  function isAdministrativeCadreSelected() {
+    return document.getElementById('subjectSelect')?.value === 'كادر إداري';
+  }
+
+  function updateCoverageMode() {
+    const adminMode = isAdministrativeCadreSelected();
+    document.getElementById('classCoverageGroup')?.classList.toggle('hidden', adminMode);
+    document.getElementById('adminCoverageGroup')?.classList.toggle('hidden', !adminMode);
+    document.getElementById('teacherConsentRow')?.classList.toggle('hidden', adminMode);
+    document.getElementById('adminConsentRow')?.classList.toggle('hidden', !adminMode);
+    const title = document.getElementById('pdf-coverage-title');
+    if (title) title.textContent = adminMode ? 'تغطية العمل الإداري:' : 'جدول تغطية الحصص:';
+    if (adminMode) populateAdminSubstitutes();
+    else {
+      const wrap = document.getElementById('coverageEntries');
+      if (wrap && wrap.children.length === 0 && currentEmp) addCoverageEntry();
+    }
+  }
+
+  function populateAdminSubstitutes() {
+    const select = document.getElementById('adminSubstituteSelect');
+    if (!select) return;
+    const currentValue = select.value;
+    const options = ALL_EMPLOYEES
+      .filter(e => String(e.employeeId || e.empId || '') !== String(currentEmp?.employeeId || currentEmp?.empId || '') && !isTeacherOrCoordinator(e))
+      .map(e => `<option value="${escapeHtml(e.name || '')}" data-emp-id="${escapeHtml(e.employeeId || e.empId || '')}">${escapeHtml(e.name || '')} — ${escapeHtml(e.jobTitle || '')}</option>`).join('');
+    select.innerHTML = '<option value="">-- اختر الموظف الإداري البديل --</option>' + options;
+    if ([...select.options].some(o => o.value === currentValue)) select.value = currentValue;
+  }
+
+  document.addEventListener('change', event => {
+    if (event.target && event.target.id === 'subjectSelect') updateCoverageMode();
+  });
+
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
@@ -574,6 +626,8 @@
     if (document.getElementById('coverageEntries').children.length === 0) {
       addCoverageEntry();
     }
+    populateAdminSubstitutes();
+    updateCoverageMode();
   }
 
   function addCoverageEntry() {
@@ -582,8 +636,8 @@
     const wrap = document.getElementById('coverageEntries');
 
     const teacherOptions = ALL_EMPLOYEES
-      .filter(e => String(e.employeeId) !== String(currentEmp?.employeeId))
-      .map(e => `<option value="${escapeHtml(e.name)}" data-emp-id="${escapeHtml(e.employeeId)}">${escapeHtml(e.name)} — ${escapeHtml(e.jobTitle || '')}</option>`)
+      .filter(e => String(e.employeeId || e.empId || '') !== String(currentEmp?.employeeId || currentEmp?.empId || '') && isTeacherOrCoordinator(e))
+      .map(e => `<option value="${escapeHtml(e.name)}" data-emp-id="${escapeHtml(e.employeeId || e.empId || '')}">${escapeHtml(e.name)} — ${escapeHtml(e.jobTitle || '')}</option>`)
       .join('');
 
     const subjectOptions = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -671,26 +725,41 @@
 
     if (!date) return alert('يرجى تحديد التاريخ.');
     if (!exitTime || !returnTime) return alert('يرجى تحديد وقت الخروج ووقت العودة.');
-    if (!consentEl || !consentEl.checked) return alert('يجب الموافقة على التعهد قبل إرسال الطلب.');
     if (!reasonEl || !reasonEl.value.trim()) return alert('يرجى كتابة سبب الاستئذان.');
 
     if (subjectSelect && !subjectSelect.disabled && !subjectSelect.value) {
-      alert('يرجى اختيار المادة الدراسية.');
+      alert('يرجى اختيار المادة الدراسية أو الكادر الإداري.');
       return;
     }
 
-    let coverageArr;
-    try {
-      coverageArr = collectCoverageData();
-    } catch (err) {
-      console.error('Coverage collection error:', err);
-      alert('تعذر قراءة بيانات التغطية. يرجى مراجعتها.');
-      return;
-    }
-
-    if (!Array.isArray(coverageArr) || coverageArr.length === 0) {
-      alert('يرجى إضافة حصة تغطية مكتملة البيانات على الأقل.');
-      return;
+    const adminMode = isAdministrativeCadreSelected();
+    let coverageArr = [];
+    let adminCoverage = '';
+    let adminSubstitute = '';
+    let adminSubstituteEmpId = '';
+    if (adminMode) {
+      const adminConsent = document.getElementById('adminConsent');
+      const adminDetailsEl = document.getElementById('adminCoverageDetails');
+      const adminSelect = document.getElementById('adminSubstituteSelect');
+      adminCoverage = adminDetailsEl ? adminDetailsEl.value.trim() : '';
+      adminSubstitute = adminSelect ? adminSelect.value : '';
+      adminSubstituteEmpId = adminSelect?.selectedOptions?.[0]?.dataset?.empId || '';
+      if (!adminCoverage) return alert('يرجى كتابة الأعمال الإدارية المطلوب تغطيتها.');
+      if (!adminSubstitute) return alert('يرجى اختيار الموظف الإداري البديل.');
+      if (!adminConsent?.checked) return alert('يرجى تأكيد التنسيق مع الموظف الإداري البديل.');
+    } else {
+      if (!consentEl || !consentEl.checked) return alert('يجب الموافقة على التعهد قبل إرسال الطلب.');
+      try {
+        coverageArr = collectCoverageData();
+      } catch (err) {
+        console.error('Coverage collection error:', err);
+        alert('تعذر قراءة بيانات التغطية. يرجى مراجعتها.');
+        return;
+      }
+      if (!Array.isArray(coverageArr) || coverageArr.length === 0) {
+        alert('يرجى إضافة حصة تغطية مكتملة البيانات على الأقل.');
+        return;
+      }
     }
 
     const duration = Number(calcDuration()) || 0;
@@ -707,7 +776,6 @@
       'البديل: ' + (c.substituteTeacher || ''),
       'الرقم الوظيفي للبديل: ' + (c.substituteEmpId || '')
     ].join(' | ')).join('\n');
-
     const employeeId = String(currentEmp.employeeId || currentEmp.empId || '').trim();
     if (!employeeId) {
       alert('لم يتم العثور على الرقم الوظيفي. يرجى تسجيل الدخول مجدداً.');
@@ -724,15 +792,19 @@
       subject: subjectSelect && !subjectSelect.disabled
         ? subjectSelect.value
         : 'إرسال مباشر للنائب الأكاديمي',
+      coverageType: adminMode ? 'إداري' : 'حصص',
+      adminCoverage: adminCoverage,
+      adminSubstitute: adminSubstitute,
+      adminSubstituteEmpId: adminSubstituteEmpId,
       permissionType: permissionType,
       date: date,
       exitTime: exitTime,
       returnTime: returnTime,
       reason: reasonEl.value.trim(),
-      coverage: coverageText,
+      coverage: adminMode ? ('تغطية العمل الإداري: ' + adminCoverage + ' | البديل: ' + adminSubstitute) : coverageText,
       coverageDetails: JSON.stringify(coverageArr),
       duration: duration,
-      consent: true
+      consent: adminMode ? Boolean(document.getElementById('adminConsent')?.checked) : Boolean(consentEl?.checked)
     };
 
     const originalText = btn ? btn.innerText : 'إرسال الطلب';
@@ -787,7 +859,8 @@
     const isCoordinator = job.includes('منسق') || job.includes('منسقة');
     const isProjectCoordinator = job.includes('مشاريع');
     const isTheatreArtsTeacher = job.includes('مسرحية') || job.includes('مسرح');
-    const sendDirectlyToVP = isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
+    const adminMode = isAdministrativeCadreSelected();
+    const sendDirectlyToVP = adminMode || isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
 
     let recipientPhone = VP_PHONE;
     let recipientName = 'النائب الأكاديمي';
@@ -810,12 +883,14 @@
       recipientName = `منسق مادة ${subject} (${coordInfo.name})`;
     }
 
-    const coverageArr = collectCoverageData();
-    const coverageText = coverageArr.map(c =>
+    const coverageArr = adminMode ? [] : collectCoverageData();
+    const coverageText = adminMode
+      ? ('تغطية العمل الإداري: ' + (document.getElementById('adminCoverageDetails')?.value || '') + '\nالبديل: ' + (document.getElementById('adminSubstituteSelect')?.value || ''))
+      : coverageArr.map(c =>
       `• ${c.subject} - ${c.day} ${c.date} - الحصة ${c.period} - البديل: ${c.substituteTeacher}`
     ).join('\n');
 
-    const msg = `السلام عليكم،\nالمعلم: ${currentEmp.name}\nالمسمى: ${currentEmp.jobTitle}\nالمستلم: ${recipientName}\nالمادة: ${subject}\nقدم طلب استئذان جديد.\nرقم الطلب: ${savedReqId}\nنوع الإذن: ${document.getElementById('permType').value}\nالتاريخ: ${document.getElementById('permDate').value}\nتغطية الحصص:\n${coverageText || 'لا يوجد'}`;
+    const msg = `السلام عليكم،\nالموظف المستأذن: ${currentEmp.name}\nالمسمى: ${currentEmp.jobTitle}\nالمستلم: ${recipientName}\nالمادة: ${subject}\nقدم طلب استئذان جديد.\nرقم الطلب: ${savedReqId}\nنوع الإذن: ${document.getElementById('permType').value}\nالتاريخ: ${document.getElementById('permDate').value}\nتغطية الحصص:\n${coverageText || 'لا يوجد'}`;
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const url = isMobile
@@ -1091,7 +1166,11 @@
         console.warn('تعذر قراءة تفاصيل التغطية:', err);
       }
     }
-    setPdfText('pdf-coverage', coverageText || 'لا توجد حصص مسجلة في التغطية.');
+    const isAdminRequest = data.coverageType === 'إداري' || data.subject === 'كادر إداري';
+    const pdfCoverageTitle = document.getElementById('pdf-coverage-title');
+    if (pdfCoverageTitle) pdfCoverageTitle.textContent = isAdminRequest ? 'تغطية العمل الإداري:' : 'جدول تغطية الحصص:';
+    if (isAdminRequest && data.adminCoverage) coverageText = 'الأعمال الإدارية: ' + data.adminCoverage + '\nالموظف البديل: ' + (data.adminSubstitute || '');
+    setPdfText('pdf-coverage', coverageText || 'لا توجد بيانات تغطية مسجلة.');
 
     const original = {
       position: element.style.position,
@@ -1108,8 +1187,9 @@
       element.classList.remove('hidden');
       element.classList.add('pdf-capturing');
       Object.assign(element.style, {
-        position: 'fixed', left: '0', top: '0', display: 'block',
-        visibility: 'visible', opacity: '1', zIndex: '99999', background: '#ffffff'
+        position: 'absolute', left: '0', top: '0', display: 'block',
+        visibility: 'visible', opacity: '1', zIndex: '99999', background: '#ffffff',
+        width: '210mm', minHeight: '297mm', transform: 'none', filter: 'none'
       });
 
       if (document.fonts && document.fonts.ready) await document.fonts.ready;
@@ -1120,7 +1200,7 @@
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       const reqId = String(data.requestId || data.reqId || 'request').replace(/[^\w-]/g, '_');
-      await html2pdf().set({
+      const pdfOptions = {
         margin: 0,
         filename: 'استئذان_' + reqId + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
@@ -1130,11 +1210,24 @@
           allowTaint: false,
           backgroundColor: '#ffffff',
           scrollX: 0,
-          scrollY: 0
+          scrollY: 0,
+          logging: true,
+          windowWidth: Math.max(document.documentElement.clientWidth, 1200),
+          onclone: function(clonedDocument) {
+            const clonedElement = clonedDocument.getElementById('pdf-template');
+            if (clonedElement) {
+              clonedElement.classList.remove('hidden');
+              clonedElement.classList.add('pdf-capturing');
+              clonedElement.style.cssText += ';display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;left:0!important;top:0!important;width:210mm!important;min-height:297mm!important;background:#fff!important;transform:none!important;';
+            }
+          }
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] }
-      }).from(element).save();
+      };
+
+      // استخدم سلسلة html2pdf القياسية مرة واحدة؛ إعادة استخدام Worker بعد toCanvas قد تسبب خطأ عند الحفظ.
+      await html2pdf().set(pdfOptions).from(element).save();
     } catch (err) {
       console.error('PDF generation error:', err);
       alert('حدث خطأ أثناء إنشاء PDF: ' + (err.message || 'خطأ غير معروف'));
