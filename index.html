@@ -5,13 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام الاستئذان - مدرسة أحمد بن راشد المريخي</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root { --primary: #8a1538; --primary-light: #a61b45; --gold: #d4af37; --bg: #0f172a; --card-bg: rgba(255, 255, 255, 0.98); }
     * { box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif; }
+    .flower-decor { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .flower-decor span { position: absolute; bottom: -70px; opacity: .62; font-size: clamp(22px, 3vw, 42px); animation: flowerFloat linear infinite; filter: drop-shadow(0 4px 8px rgba(255,255,255,.15)); }
+    .flower-decor span:nth-child(1) { left: 5%; animation-duration: 17s; animation-delay: -5s; }
+    .flower-decor span:nth-child(2) { left: 17%; animation-duration: 22s; animation-delay: -12s; }
+    .flower-decor span:nth-child(3) { left: 31%; animation-duration: 19s; animation-delay: -3s; }
+    .flower-decor span:nth-child(4) { left: 48%; animation-duration: 24s; animation-delay: -15s; }
+    .flower-decor span:nth-child(5) { left: 64%; animation-duration: 18s; animation-delay: -8s; }
+    .flower-decor span:nth-child(6) { left: 79%; animation-duration: 21s; animation-delay: -10s; }
+    .flower-decor span:nth-child(7) { left: 92%; animation-duration: 16s; animation-delay: -2s; }
+    @keyframes flowerFloat { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 12% { opacity: .65; } 85% { opacity: .55; } 100% { transform: translateY(-115vh) rotate(300deg); opacity: 0; } }
     body { margin: 0; padding: 20px; background: linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%); direction: rtl; color: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
     
-    .animated-wrapper { background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light)); background-size: 800% 800%; animation: gradientBorder 6s ease infinite; padding: 6px; border-radius: 20px; width: 100%; max-width: 650px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .animated-wrapper { position: relative; z-index: 1; background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light)); background-size: 800% 800%; animation: gradientBorder 6s ease infinite; padding: 6px; border-radius: 20px; width: 100%; max-width: 650px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
     .card { background: var(--card-bg); border-radius: 14px; padding: 25px 20px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
@@ -130,6 +141,7 @@
   </style>
 </head>
 <body>
+  <div class="flower-decor" aria-hidden="true"><span>🌸</span><span>🌼</span><span>🌷</span><span>✿</span><span>🌺</span><span>❀</span><span>🌻</span></div>
 
   <div id="employeePortal" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
     <div class="animated-wrapper" id="loginCard">
@@ -292,6 +304,16 @@
       <div id="tabStats">
         <div class="admin-grid" id="statsGrid"></div>
         <div id="teacherStatsWrap"></div>
+        <div class="stat-details-panel" style="margin-top:18px;padding:16px;border:1px solid #ead3dd;border-radius:14px;background:#fffafd;">
+          <h3 style="color:var(--primary);margin-top:0;">تفاصيل الأذون</h3>
+          <div class="row" style="margin-bottom:12px;">
+            <button class="btn btn-primary btn-sm" onclick="loadRequestDetails('all')">📋 جميع الأذون</button>
+            <button class="btn btn-success btn-sm" onclick="loadRequestDetails('academic')">📘 الأذون الأكاديمية</button>
+            <button class="btn btn-sm" style="background:#17a2b8;color:white;" onclick="loadRequestDetails('admin')">🗂️ الأذون الإدارية</button>
+          </div>
+          <div id="requestDetailsList"><p style="color:#777;">اختر نوع الأذون لعرض التفاصيل.</p></div>
+          <div id="requestDetailsView" class="hidden" style="margin-top:14px;padding:14px;border:1px solid #ddd;border-radius:10px;background:white;"></div>
+        </div>
       </div>
       <div id="tabEmployees" class="hidden">
         <div class="form-group">
@@ -412,7 +434,7 @@
   </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxSqHGFyyZQC5o_HwbhIvktME7EtKsJjlT7UQuRu7AT7qC6n7R2Sf21V-OBfXW1oQsG/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzav-D0I-r6ZT9aZVJJb3zyoEZdw_35ia6IR0C1giNv9-cfDGxF9ANe98A8alHWb4fF/exec';
   const JSON_URL = 'encoded_data.txt';
   const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
   const VP_PHONE = "97433337801";
@@ -570,6 +592,10 @@
     document.getElementById('adminConsentRow')?.classList.toggle('hidden', !adminMode);
     const title = document.getElementById('pdf-coverage-title');
     if (title) title.textContent = adminMode ? 'تغطية العمل الإداري:' : 'جدول تغطية الحصص:';
+    const routingNote = document.getElementById('routingNote');
+    if (routingNote) routingNote.textContent = adminMode ? 'سيُرسل إشعار واتساب مباشرة إلى النائب الإداري، دون المرور بالمنسق أو النائب الأكاديمي.' : 'اختر المادة ليُرسل إشعار واتساب إلى منسقها الصحيح.';
+    const waBtn = document.getElementById('waBtn');
+    if (waBtn) waBtn.textContent = adminMode ? '📱 إرسال إشعار واتساب للنائب الإداري' : '📱 إرسال إشعار واتساب للمنسق الصحيح';
     if (adminMode) populateAdminSubstitutes();
     else {
       const wrap = document.getElementById('coverageEntries');
@@ -891,7 +917,20 @@
     let recipientName = 'النائب الأكاديمي';
     let subject = 'إرسال مباشر للنائب الأكاديمي';
 
-    if (!sendDirectlyToVP) {
+    if (adminMode) {
+      const adminVP = ALL_EMPLOYEES.find(e => {
+        const j = normalizeArabic_(e.jobTitle || '');
+        return j.includes('نائب') && j.includes('اداري') && String(e.phone || '').replace(/\D/g, '').length >= 8;
+      });
+      if (!adminVP) {
+        alert('لم يتم العثور على رقم هاتف النائب الإداري في بيانات الموظفين. لن يتم إرسال الإشعار إلى النائب الأكاديمي بالخطأ.');
+        return;
+      }
+      recipientPhone = String(adminVP.phone).replace(/\D/g, '');
+      if (recipientPhone.length === 8) recipientPhone = '974' + recipientPhone;
+      recipientName = 'النائب الإداري (' + adminVP.name + ')';
+      subject = 'كادر إداري';
+    } else if (!sendDirectlyToVP) {
       const subjectSelect = document.getElementById('subjectSelect');
       subject = subjectSelect ? subjectSelect.value : '';
       if (!subject) {
@@ -978,7 +1017,14 @@
       if (currentRole === 'coordinator' && decision === 'approved') {
         sendAutoWhatsApp(VP_PHONE, reqId, "النائب الأكاديمي", "المنسق");
       } else if (currentRole === 'vp' && decision === 'approved') {
-        sendAutoWhatsApp(PRINCIPAL_PHONE, reqId, "مدير المدرسة", "النائب الأكاديمي");
+        let approvingRoleName = 'النائب الأكاديمي';
+        try {
+          const check = new URLSearchParams(); check.append('action', 'getRequest'); check.append('reqId', reqId);
+          const checkRes = await fetch(API_URL, { method: 'POST', body: check, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+          const checkData = await checkRes.json();
+          if (checkData.success && (String(checkData.data.coverageType || '') === 'إداري' || String(checkData.data.subject || '') === 'كادر إداري')) approvingRoleName = 'النائب الإداري';
+        } catch (_) {}
+        sendAutoWhatsApp(PRINCIPAL_PHONE, reqId, "مدير المدرسة", approvingRoleName);
       }
     }
   }
@@ -1009,13 +1055,57 @@
       if (!result.success) throw new Error(result.message || 'تعذر تحميل الإحصائيات');
 
       grid.innerHTML = `
-        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${Number(result.total || 0)}</div></div>
-        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${Number(result.academic || 0)}</div></div>
-        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${Number(result.admin || 0)}</div></div>
+        <button type="button" class="stat-box" style="text-align:right;cursor:pointer;border:0;border-right:5px solid var(--primary)" onclick="loadRequestDetails('all')"><h3>إجمالي الطلبات — اضغط للتفاصيل</h3><div class="value">${Number(result.total || 0)}</div></button>
+        <button type="button" class="stat-box" style="text-align:right;cursor:pointer;border:0;border-right:5px solid #28a745" onclick="loadRequestDetails('academic')"><h3>أكاديمي — اضغط للتفاصيل</h3><div class="value">${Number(result.academic || 0)}</div></button>
+        <button type="button" class="stat-box" style="text-align:right;cursor:pointer;border:0;border-right:5px solid #17a2b8" onclick="loadRequestDetails('admin')"><h3>إداري — اضغط للتفاصيل</h3><div class="value">${Number(result.admin || 0)}</div></button>
       `;
     } catch (e) {
       grid.innerHTML = `<p style="color:#b00020;">تعذر تحميل الإحصائيات: ${escapeHtml(e.message || String(e))}</p>`;
     }
+  }
+
+  async function loadRequestDetails(kind) {
+    const list = document.getElementById('requestDetailsList');
+    const view = document.getElementById('requestDetailsView');
+    view.classList.add('hidden');
+    list.innerHTML = '<p>جاري تحميل الأذون...</p>';
+    try {
+      const fd = new URLSearchParams(); fd.append('action', 'getRequests');
+      const response = await fetch(API_URL, { method: 'POST', body: fd, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'تعذر تحميل الأذون');
+      const requests = (result.requests || []).filter(d => {
+        const isAdmin = String(d.coverageType || '') === 'إداري' || String(d.subject || '') === 'كادر إداري' || !/معلم|معلمة|مدرس|مدرسة|منسق|منسقة/.test(String(d.jobTitle || ''));
+        return kind === 'all' || (kind === 'admin' ? isAdmin : !isAdmin);
+      });
+      if (!requests.length) { list.innerHTML = '<p>لا توجد أذون في هذه الفئة.</p>'; return; }
+      list.innerHTML = `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>رقم الطلب</th><th>الموظف</th><th>التصنيف</th><th>التاريخ</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody>${requests.map((d,i) => {
+        const isAdmin = String(d.coverageType || '') === 'إداري' || String(d.subject || '') === 'كادر إداري' || !/معلم|معلمة|مدرس|مدرسة|منسق|منسقة/.test(String(d.jobTitle || ''));
+        const packed = encodeURIComponent(JSON.stringify(d));
+        return `<tr><td>${escapeHtml(d.requestId || d.reqId || '')}</td><td>${escapeHtml(d.name || '')}</td><td>${isAdmin ? 'إداري' : 'أكاديمي'}</td><td>${escapeHtml(d.date || '')}</td><td>${escapeHtml(d.status || '')}</td><td><button class="btn btn-primary btn-sm" onclick="showAdminRequestDetails('${packed}')">التفاصيل</button> <button class="btn btn-sm" style="background:#17a2b8;color:white" onclick="downloadAdminRequestImage('${packed}')">تحميل JPG</button></td></tr>`;
+      }).join('')}</tbody></table></div>`;
+    } catch (e) { list.innerHTML = `<p class="error-msg">${escapeHtml(e.message || String(e))}</p>`; }
+  }
+
+  function showAdminRequestDetails(packed) {
+    let d; try { d = JSON.parse(decodeURIComponent(packed)); } catch (_) { return alert('تعذر قراءة تفاصيل الطلب.'); }
+    currentTrackedData = d;
+    const isAdmin = String(d.coverageType || '') === 'إداري' || String(d.subject || '') === 'كادر إداري';
+    const fields = [
+      ['رقم الطلب', d.requestId || d.reqId], ['اسم الموظف', d.name], ['الرقم الوظيفي', d.employeeId || d.empId], ['المسمى الوظيفي', d.jobTitle],
+      ['التصنيف', isAdmin ? 'إداري' : 'أكاديمي'], ['المادة/الكادر', d.subject], ['نوع الإذن', d.permissionType || d.type], ['التاريخ', d.date],
+      ['وقت الخروج', d.exitTime || d.exit], ['وقت العودة', d.returnTime || d.return], ['السبب', d.reason], ['الحالة', d.status],
+      ['تغطية الحصص', d.coverage], ['تغطية العمل الإداري', d.adminCoverage], ['البديل الإداري', d.adminSubstitute],
+      ['حالة المنسق', d.coordinatorStatus], ['حالة النائب', d.vpStatus], ['حالة المدير', d.principalStatus]
+    ];
+    const view = document.getElementById('requestDetailsView');
+    view.innerHTML = `<h4 style="color:var(--primary)">تفاصيل الطلب ${escapeHtml(d.requestId || d.reqId || '')}</h4><div class="admin-grid">${fields.map(([label,value]) => `<div class="stat-box" style="border-right-color:#d4af37"><h3>${escapeHtml(label)}</h3><div style="font-size:.95rem;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(value || '—')}</div></div>`).join('')}</div><button class="btn btn-primary btn-sm" onclick="downloadPDFFromTrack()">🖼️ تحميل صورة الإذن JPG</button>`;
+    view.classList.remove('hidden'); view.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function downloadAdminRequestImage(packed) {
+    try { currentTrackedData = JSON.parse(decodeURIComponent(packed)); downloadPDFFromTrack(); }
+    catch (_) { alert('تعذر تجهيز صورة الإذن.'); }
   }
 
   function renderEmployeesList() {
@@ -1138,12 +1228,22 @@
     }
   }
 
+  function loadHtml2CanvasLibrary() {
+    return new Promise((resolve, reject) => {
+      if (typeof html2canvas !== 'undefined') return resolve();
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = () => typeof html2canvas !== 'undefined' ? resolve() : reject(new Error('المكتبة لم تُعرّف بعد التحميل'));
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
   async function downloadPDFFromTrack() {
     const data = currentTrackedData;
     if (!data) { alert('لا توجد بيانات طلب جاهزة للتصدير.'); return; }
     if (typeof html2canvas === 'undefined') {
-      alert('مكتبة التصوير غير محملة. تحقق من اتصال الإنترنت ثم حدّث الصفحة.');
-      return;
+      try { await loadHtml2CanvasLibrary(); } catch (e) { alert('تعذر تحميل مكتبة التصوير. تحقق من اتصال الإنترنت أو اسمح بتحميل cdnjs.cloudflare.com ثم حدّث الصفحة.'); return; }
     }
     const source = document.getElementById('pdf-template');
     if (!source) { alert('لم يتم العثور على قالب ورقة الإذن.'); return; }
