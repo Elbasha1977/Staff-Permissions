@@ -482,4 +482,591 @@
           document.getElementById('step2').classList.add('active');
           document.getElementById('step3').classList.add('active');
           document.getElementById('step4').classList.add('active');
-          document.getElement
+          document.getElementById('trkStatusText').innerText = "✅ معتمد نهائياً (مقبول)";
+          document.getElementById('trkNote').innerHTML = `<span style="color:#28a745">تمت الموافقة النهائية من مدير المدرسة. يمكنك تحميل ورقة الإذن الآن.</span>`;
+          document.getElementById('trackPdfBtn').classList.remove('hidden');
+        } else if(status.includes('rejected')) {
+          document.getElementById('step2').classList.add('rejected');
+          document.getElementById('trkStatusText').innerText = "❌ مرفوض";
+          document.getElementById('trkNote').innerHTML = `<span style="color:#dc3545">تم رفض الطلب. يرجى مراجعة إدارة المدرسة للمزيد من التفاصيل.</span>`;
+          document.getElementById('trackPdfBtn').classList.add('hidden');
+        }
+      } else { alert(result.message); }
+    } catch(e) { alert("خطأ في الاتصال بالخادم"); }
+  }
+
+  // 2. تسجيل الدخول
+  async function verifyEmp() {
+    const id = document.getElementById('empIdInput').value.trim();
+    if(!id) return;
+    if (ALL_EMPLOYEES.length === 0) await loadAllEmployees();
+    if (ALL_EMPLOYEES.length === 0) return;
+
+    let emp = ALL_EMPLOYEES.find(e => String(e.employeeId || '') === id || String(e.personalId || '') === id);
+    if(!emp) {
+      document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة.";
+      return;
+    }
+    currentEmp = emp;
+
+    const job = String(emp.jobTitle || '').trim();
+    const isCoordinator = job.includes('منسق') || job.includes('منسقة');
+    const isProjectCoordinator = job.includes('مشاريع');
+    const isTheatreArtsTeacher = job.includes('مسرحية') || job.includes('مسرح');
+    const sendDirectlyToVP = isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
+
+    const subjectSelect = document.getElementById('subjectSelect');
+    const subjectGroup = document.getElementById('subjectGroup');
+    const routingNote = document.getElementById('routingNote');
+    if (subjectSelect) {
+      subjectSelect.value = '';
+      subjectSelect.disabled = sendDirectlyToVP;
+      subjectSelect.required = !sendDirectlyToVP;
+    }
+    if (subjectGroup) subjectGroup.style.display = sendDirectlyToVP ? 'none' : 'block';
+    if (routingNote) {
+      routingNote.innerText = sendDirectlyToVP
+        ? 'سيُرسل إشعار واتساب مباشرة إلى النائب الأكاديمي.'
+        : 'اختر المادة ليُرسل إشعار واتساب إلى منسقها الصحيح.';
+    }
+
+    let balance = 600;
+    try {
+      const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
+      const bal = await res.json();
+      if (bal && typeof bal.balance === 'number') balance = bal.balance;
+    } catch(e) { }
+
+    document.getElementById('empFullInfo').innerHTML = `
+      <p>مرحباً، <strong>${escapeHtml(emp.name)}</strong></p>
+      <p>المسمى: <span>${escapeHtml(emp.jobTitle || '')}</span></p>
+      <p>الجنسية: <span>${escapeHtml(emp.nationality || '')}</span></p>
+      <p>الرقم الوظيفي: <span>${escapeHtml(emp.employeeId || '')}</span></p>
+      <p>الرقم الشخصي: <span>${escapeHtml(emp.personalId || '')}</span></p>
+      <p>الهاتف: <span>${escapeHtml(emp.phone || '')}</span></p>
+      <p>البريد: <span>${escapeHtml(emp.email || '')}</span></p>
+      <p>الرصيد المتبقي: <span class="balance-badge">${balance} دقيقة</span></p>
+    `;
+
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('formScreen').classList.remove('hidden');
+    document.getElementById('permDate').valueAsDate = new Date();
+
+    if (document.getElementById('coverageEntries').children.length === 0) {
+      addCoverageEntry();
+    }
+  }
+
+  // 3. تغطية الحصص
+  function addCoverageEntry() {
+    coverageCounter++;
+    const idx = coverageCounter;
+    const wrap = document.getElementById('coverageEntries');
+
+    const teacherOptions = ALL_EMPLOYEES
+      .filter(e => String(e.employeeId) !== String(currentEmp?.employeeId))
+      .map(e => `<option value="${escapeHtml(e.name)}" data-emp-id="${escapeHtml(e.employeeId)}">${escapeHtml(e.name)} — ${escapeHtml(e.jobTitle || '')}</option>`)
+      .join('');
+
+    const subjectOptions = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+    const dayOptions = DAYS.map(d => `<option value="${d}">${d}</option>`).join('');
+    const periodOptions = PERIODS.map(p => `<option value="${p}">الحصة ${p}</option>`).join('');
+
+    const div = document.createElement('div');
+    div.className = 'coverage-entry';
+    div.dataset.entryId = idx;
+    div.innerHTML = `
+      <h4>تغطية حصة #${idx} <button type="button" class="btn btn-danger btn-sm" style="float:left;" onclick="removeCoverageEntry(${idx})">حذف</button></h4>
+      <div class="row">
+        <div class="form-group"><label>المادة</label><select class="cov-subject">${subjectOptions}</select></div>
+        <div class="form-group"><label>اليوم</label><select class="cov-day">${dayOptions}</select></div>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>التاريخ</label><input type="date" class="cov-date"></div>
+        <div class="form-group"><label>الحصة</label><select class="cov-period">${periodOptions}</select></div>
+      </div>
+      <div class="form-group"><label>المعلم البديل</label>
+        <select class="cov-teacher"><option value="">-- اختر المعلم البديل --</option>${teacherOptions}</select>
+      </div>
+    `;
+    wrap.appendChild(div);
+  }
+
+  function removeCoverageEntry(id) {
+    const entry = document.querySelector(`.coverage-entry[data-entry-id="${id}"]`);
+    if (entry) entry.remove();
+  }
+
+  function collectCoverageData() {
+    const entries = document.querySelectorAll('.coverage-entry');
+    const result = [];
+    entries.forEach(entry => {
+      const subject = entry.querySelector('.cov-subject').value;
+      const day = entry.querySelector('.cov-day').value;
+      const date = entry.querySelector('.cov-date').value;
+      const period = entry.querySelector('.cov-period').value;
+      const teacherSelect = entry.querySelector('.cov-teacher');
+      const teacher = teacherSelect.value;
+      const teacherEmpId = teacherSelect.selectedOptions[0]?.dataset?.empId || '';
+      if (subject && day && period && teacher) {
+        result.push({ subject, day, date, period, substituteTeacher: teacher, substituteEmpId: teacherEmpId });
+      }
+    });
+    return result;
+  }
+
+  function calcDuration() {
+    const exit = document.getElementById('exitTime').value;
+    const ret = document.getElementById('returnTime').value;
+    const type = document.getElementById('permType').value;
+    if (type === 'ورشة تعليمية' || type === 'مهمة رسمية') return 0;
+    if (exit && ret) {
+      const [eh, em] = exit.split(':');
+      const [rh, rm] = ret.split(':');
+      return (rh*60 + +rm) - (eh*60 + +em);
+    }
+    return 0;
+  }
+
+  // 4. إرسال الطلب
+  function submitRequest() {
+    const date = document.getElementById('permDate').value;
+    if(!date) { alert("يرجى تحديد التاريخ"); return; }
+
+    if (!document.getElementById('teacherConsent').checked) {
+      alert("يجب الموافقة على التعهد قبل إرسال الطلب.");
+      return;
+    }
+
+    const coverageArr = collectCoverageData();
+    if (coverageArr.length === 0) {
+      alert("يرجى إضافة حصة تغطية واحدة على الأقل على الأقل (بجميع بياناتها).");
+      return;
+    }
+
+    const coverageText = coverageArr.map(c =>
+      `${c.subject} | ${c.day} ${c.date} | الحصة ${c.period} | البديل: ${c.substituteTeacher}`
+    ).join('\n');
+
+    savedReqId = 'REQ-' + Math.floor(10000 + Math.random() * 90000);
+
+    const data = {
+      reqId: savedReqId,
+      empId: currentEmp.employeeId,
+      name: currentEmp.name,
+      jobTitle: currentEmp.jobTitle,
+      phone: currentEmp.phone || '',
+      email: currentEmp.email || '',
+      permissionType: document.getElementById('permType').value,
+      date: date,
+      subject: (document.getElementById('subjectSelect') && !document.getElementById('subjectSelect').disabled)
+        ? document.getElementById('subjectSelect').value : 'إرسال مباشر للنائب الأكاديمي',
+      exitTime: document.getElementById('exitTime').value,
+      returnTime: document.getElementById('returnTime').value,
+      reason: document.getElementById('reason').value,
+      coverage: coverageText,
+      coverageDetails: coverageArr,
+      duration: calcDuration(),
+      consent: true
+    };
+
+    document.getElementById('submitBtn').innerText = "جاري الحفظ...";
+    document.getElementById('submitBtn').disabled = true;
+
+    const iframeName = 'hidden_iframe_' + Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.name = iframeName; iframe.style.display = 'none'; document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.action = API_URL; form.method = 'POST'; form.target = iframeName; form.style.display = 'none';
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'submit'); formData.append('data', JSON.stringify(data));
+
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = key; input.value = value;
+      form.appendChild(input);
+    }
+    document.body.appendChild(form); form.submit();
+
+    setTimeout(() => {
+      document.getElementById('successBox').classList.remove('hidden');
+      document.getElementById('displayReqId').innerText = savedReqId;
+      document.getElementById('waBtn').style.display = 'block';
+      document.getElementById('submitBtn').innerText = "إرسال الطلب";
+      document.getElementById('submitBtn').disabled = false;
+      document.body.removeChild(form); document.body.removeChild(iframe);
+    }, 2500);
+  }
+
+  // 5. إرسال واتساب
+  function sendWhatsApp() {
+    if (!currentEmp) { alert('يرجى تسجيل الدخول أولاً.'); return; }
+
+    const job = String(currentEmp.jobTitle || '').trim();
+    const isCoordinator = job.includes('منسق') || job.includes('منسقة');
+    const isProjectCoordinator = job.includes('مشاريع');
+    const isTheatreArtsTeacher = job.includes('مسرحية') || job.includes('مسرح');
+    const sendDirectlyToVP = isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
+
+    let recipientPhone = VP_PHONE;
+    let recipientName = 'النائب الأكاديمي';
+    let subject = 'إرسال مباشر للنائب الأكاديمي';
+
+    if (!sendDirectlyToVP) {
+      const subjectSelect = document.getElementById('subjectSelect');
+      subject = subjectSelect ? subjectSelect.value : '';
+      if (!subject) {
+        alert('يرجى تحديد المادة أولاً حتى يتم إرسال الإشعار إلى منسقها.');
+        if (subjectSelect) subjectSelect.focus();
+        return;
+      }
+      const coordInfo = SUBJECT_COORDINATORS[subject];
+      if (!coordInfo || !coordInfo.phone) {
+        alert(`لم يتم العثور على منسق مادة "${subject}" في بيانات المدرسة. تأكد من وجود منسق حقيقي على كلمة "منسق" واسم المادة.`);
+        return;
+      }
+      recipientPhone = coordInfo.phone;
+      recipientName = `منسق مادة ${subject} (${coordInfo.name})`;
+    }
+
+    const coverageArr = collectCoverageData();
+    const coverageText = coverageArr.map(c =>
+      `• ${c.subject} - ${c.day} ${c.date} - الحصة ${c.period} - البديل: ${c.substituteTeacher}`
+    ).join('\n');
+
+    const msg = `السلام عليكم،\nالمعلم: ${currentEmp.name}\nالمسمى: ${currentEmp.jobTitle}\nالمستلم: ${recipientName}\nالمادة: ${subject}\nقدم طلب استئذان جديد.\nرقم الطلب: ${savedReqId}\nنوع الإذن: ${document.getElementById('permType').value}\nالتاريخ: ${document.getElementById('permDate').value}\nتغطية الحصص:\n${coverageText || 'لا يوجد'}`;
+
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const url = isMobile
+      ? `whatsapp://send?phone=${recipientPhone}&text=${encodeURIComponent(msg)}`
+      : `https://web.whatsapp.com/send?phone=${recipientPhone}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  // 6. الاعتماد
+  function askPassword(role) {
+    const pass = prompt("أدخل كلمة المرور الخاصة بك:");
+    if (pass === PASSWORDS[role]) {
+      currentRole = role;
+      document.getElementById('employeePortal').classList.add('hidden');
+      document.getElementById('secretButtons').classList.add('hidden');
+      if (role === 'admin') {
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        loadStats();
+        renderEmployeesList();
+      } else {
+        document.getElementById('approvalScreen').classList.remove('hidden');
+        document.getElementById('approvalTitle').innerText =
+          role === 'coordinator' ? 'اعتماد المنسق' :
+          role === 'vp' ? 'اعتماد النائب الأكاديمي' : 'الاعتماد النهائي (المدير)';
+      }
+    } else { alert("كلمة المرور خاطئة!"); }
+  }
+
+  async function fetchRequest() {
+    const reqId = document.getElementById('searchReqId').value.trim();
+    if(!reqId) return;
+    const formData = new URLSearchParams();
+    formData.append('action', 'getRequest'); formData.append('reqId', reqId);
+    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const result = await res.json();
+    if(result.success) {
+      document.getElementById('requestDetails').classList.remove('hidden');
+      document.getElementById('detName').innerText = result.data.name;
+      document.getElementById('detJob').innerText = result.data.jobTitle;
+      document.getElementById('detReason').innerText = result.data.reason;
+      document.getElementById('detCoverage').innerText = result.data.coverage || "لا يوجد";
+      document.getElementById('detStatus').innerText = result.data.status;
+      document.getElementById('searchReqId').dataset.currentId = reqId;
+    } else { alert(result.message); }
+  }
+
+  async function approveRequest(decision) {
+    const reqId = document.getElementById('searchReqId').dataset.currentId;
+    if(!reqId) return;
+    const formData = new URLSearchParams();
+    formData.append('action', 'updateStatus'); formData.append('reqId', reqId);
+    formData.append('role', currentRole); formData.append('decision', decision);
+    document.getElementById('approveMsg').innerText = "جاري الحفظ...";
+    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const result = await res.json();
+    if(result.success) {
+      document.getElementById('approveMsg').innerText = `✅ تم تسجيل القرار: ${result.newStatus}`;
+      document.getElementById('approveMsg').style.color = "#28a745";
+      if (currentRole === 'coordinator' && decision === 'approved') {
+        sendAutoWhatsApp(VP_PHONE, reqId, "النائب الأكاديمي", "المنسق");
+      } else if (currentRole === 'vp' && decision === 'approved') {
+        sendAutoWhatsApp(PRINCIPAL_PHONE, reqId, "مدير المدرسة", "النائب الأكاديمي");
+      }
+    }
+  }
+
+  function sendAutoWhatsApp(phone, reqId, nextRole, currentRoleName) {
+    const msg = `السلام عليكم،\nأنا (${currentRoleName}).\nتم اعتماد طلب الاستئذان رقم: ${reqId}.\nيرجى الدخول للنظام واتخاذ الإجراء اللازم.`;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const url = isMobile ? `whatsapp://send?phone=${phone}&text=${encodeURIComponent(msg)}` : `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  // 7. الإدارة
+  function switchAdminTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById('tabStats').classList.toggle('hidden', tab !== 'stats');
+    document.getElementById('tabEmployees').classList.toggle('hidden', tab !== 'employees');
+  }
+
+  async function loadStats() {
+    const grid = document.getElementById('statsGrid');
+    grid.innerHTML = '<p>جاري تحميل الإحصائيات...</p>';
+    document.getElementById('teacherStatsWrap').innerHTML = '';
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', 'getStats');
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.message || 'تعذر تحميل الإحصائيات');
+
+      grid.innerHTML = `
+        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${Number(result.total || 0)}</div></div>
+        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${Number(result.academic || 0)}</div></div>
+        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${Number(result.admin || 0)}</div></div>
+      `;
+
+      const teachers = Array.isArray(result.teacherStats) ? result.teacherStats
+                       : (Array.isArray(result.teachers) ? result.teachers : []);
+      if (teachers.length) {
+        const rows = teachers.map(t => {
+          const balance = (t.remainingBalance ?? t.remaining ?? t.balance);
+          const exceeded = t.exceeded === true || (balance != null && Number(balance) <= 0);
+          return `<tr>
+            <td>${escapeHtml(t.name || t.teacher || 'غير محدد')}</td>
+            <td>${escapeHtml(t.jobTitle || '')}</td>
+            <td>${Number(t.count ?? t.totalRequests ?? t.requests ?? 0)}</td>
+            <td>${Number(t.usedMinutes ?? t.used ?? t.totalMinutes ?? 0)}</td>
+            <td>${balance == null ? 'غير متاح' : Number(balance) + ' دقيقة'}</td>
+            <td style="color:${exceeded ? '#dc3545' : '#28a745'};font-weight:bold;">${exceeded ? 'نعم' : 'لا'}</td>
+          </tr>`;
+        }).join('');
+        document.getElementById('teacherStatsWrap').innerHTML = `
+          <div style="overflow-x:auto;margin-top:15px;">
+            <h3>تفاصيل استئذانات المعلمين</h3>
+            <table class="data-table">
+              <thead><tr>
+                <th>المعلم</th><th>المسمى</th><th>عدد الطلبات</th>
+                <th>الدقائق المستخدمة</th><th>الرصيد المتبقي</th><th>نفد الرصيد؟</th>
+              </tr></thead><tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
+
+      const rankings = result.rankings || {};
+      const most = Array.isArray(rankings.mostRequests) ? rankings.mostRequests : [];
+      const mostMinutes = Array.isArray(rankings.mostMinutes) ? rankings.mostMinutes : [];
+      const exhausted = Array.isArray(rankings.exhausted) ? rankings.exhausted : [];
+
+      let rankHtml = '';
+      if (most.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>🏆 الأكثر تقديماً لطلبات الاستئذان</h3><ol>${
+          most.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.count || 0)} طلب</li>`).join('')
+        }</ol></div>`;
+      }
+      if (mostMinutes.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>⏱️ الأكثر استهلاكاً للدقائق</h3><ol>${
+          mostMinutes.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.minutes || 0)} دقيقة</li>`).join('')
+        }</ol></div>`;
+      }
+      if (exhausted.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>⚠️ من نفد رصيده</h3><ul>${
+          exhausted.map(x => `<li>${escapeHtml(x.name || 'غير محدد')}</li>`).join('')
+        }</ul></div>`;
+      }
+      document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend', rankHtml);
+
+      if (!teachers.length && !most.length && !exhausted.length) {
+        document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend',
+          `<div style="background:#fff8e1;padding:14px;border-radius:8px;margin-top:12px;">
+            <strong>لا توجد تفاصيل كافية من الخادم.</strong>
+            <p>تأكد أن يعيد Code.gs الحقول teacherStats و rankings لتفعيل التحليل التفيصي.</p>
+          </div>`);
+      }
+    } catch (e) {
+      grid.innerHTML = `<p style="color:#b00020;">تعذر تحميل الإحصائيات: ${escapeHtml(e.message || String(e))}</p>`;
+    }
+  }
+
+  // 8. إدارة المعلمين
+  function renderEmployeesList() {
+    const query = (document.getElementById('empSearchInput')?.value || '').trim().toLowerCase();
+    const list = document.getElementById('employeesList');
+    const filtered = ALL_EMPLOYEES.filter(e => {
+      if (!query) return true;
+      return (e.name || '').toLowerCase().includes(query) ||
+             String(e.employeeId || '').includes(query) ||
+             String(e.personalId || '').includes(query) ||
+             (e.jobTitle || '').toLowerCase().includes(query);
+    });
+    if (filtered.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:#888;">لا يوجد نتائج.</p>';
+      return;
+    }
+    list.innerHTML = filtered.map(e => `
+      <div class="employee-row">
+        <span><strong>${escapeHtml(e.name)}</strong></span>
+        <span>${escapeHtml(e.jobTitle || '')}</span>
+        <span>وظيفي: ${escapeHtml(e.employeeId || '')}</span>
+        <span>هاتف: ${escapeHtml(e.phone || '')}</span>
+        <button class="btn btn-primary btn-sm" onclick="openEditEmployeeForm('${escapeHtml(e.id)}')">تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${escapeHtml(e.id)}','${escapeHtml(e.name)}')">حذف</button>
+      </div>
+    `).join('');
+  }
+
+  function openAddEmployeeForm() {
+    document.getElementById('empFormTitle').innerText = 'إضافة معلم جديد';
+    document.getElementById('empFormId').value = '';
+    ['efName','efNationality','efJobTitle','efPersonalId','efEmployeeId','efPhone','efEmail'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('efBalance').value = 600;
+    document.getElementById('empFormMsg').innerText = '';
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('employeeFormScreen').classList.remove('hidden');
+  }
+
+  function openEditEmployeeForm(id) {
+    const emp = ALL_EMPLOYEES.find(e => String(e.id) === String(id));
+    if (!emp) return;
+    document.getElementById('empFormTitle').innerText = 'تعديل بيانات معلم';
+    document.getElementById('empFormId').value = emp.id;
+    document.getElementById('efName').value = emp.name || '';
+    document.getElementById('efNationality').value = emp.nationality || '';
+    document.getElementById('efJobTitle').value = emp.jobTitle || '';
+    document.getElementById('efPersonalId').value = emp.personalId || '';
+    document.getElementById('efEmployeeId').value = emp.employeeId || '';
+    document.getElementById('efPhone').value = emp.phone || '';
+    document.getElementById('efEmail').value = emp.email || '';
+    document.getElementById('efBalance').value = 600;
+    document.getElementById('empFormMsg').innerText = '';
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('employeeFormScreen').classList.remove('hidden');
+  }
+
+  function closeEmployeeForm() {
+    document.getElementById('employeeFormScreen').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+  }
+
+  async function saveEmployee() {
+    const id = document.getElementById('empFormId').value;
+    const name = document.getElementById('efName').value.trim();
+    const jobTitle = document.getElementById('efJobTitle').value.trim();
+    const employeeId = document.getElementById('efEmployeeId').value.trim();
+    if (!name || !jobTitle || !employeeId) {
+      document.getElementById('empFormMsg').innerText = 'الاسم والمسمى والرقم الوظيفي مطلوبة.';
+      document.getElementById('empFormMsg').style.color = '#dc3545';
+      return;
+    }
+    const payload = {
+      id: id || '',
+      name, jobTitle, employeeId,
+      nationality: document.getElementById('efNationality').value.trim(),
+      personalId: document.getElementById('efPersonalId').value.trim(),
+      phone: document.getElementById('efPhone').value.trim(),
+      email: document.getElementById('efEmail').value.trim(),
+      balance: Number(document.getElementById('efBalance').value) || 600
+    };
+    const action = id ? 'updateEmployee' : 'addEmployee';
+    document.getElementById('empFormMsg').innerText = 'جاري الحفظ...';
+    document.getElementById('empFormMsg').style.color = '#555';
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', action);
+      formData.append('data', JSON.stringify(payload));
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('empFormMsg').innerText = '✅ تم الحفظ بنجاح. سيُحدَّث ملف EOF عند إعادة تحميل الصفحة.';
+        document.getElementById('empFormMsg').style.color = '#28a745';
+        setTimeout(() => closeEmployeeForm(), 1500);
+      } else {
+        throw new Error(result.message || 'فشل الحفظ');
+      }
+    } catch(e) {
+      document.getElementById('empFormMsg').innerText = '❌ ' + (e.message || 'خطأ');
+      document.getElementById('empFormMsg').style.color = '#dc3545';
+    }
+  }
+
+  async function deleteEmployee(id, name) {
+    if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', 'deleteEmployee');
+      formData.append('data', JSON.stringify({ id }));
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (result.success) {
+        alert('✅ تم الحذف.');
+        ALL_EMPLOYEES = ALL_EMPLOYEES.filter(e => String(e.id) !== String(id));
+        renderEmployeesList();
+      } else {
+        alert('❌ ' + (result.message || 'فشل الحذف'));
+      }
+    } catch(e) {
+      alert('❌ خطأ في الاتصال');
+    }
+  }
+
+  // 9. دالة تحميل الـ PDF
+  function downloadPDFFromTrack() {
+    if(!currentTrackedData) return;
+    document.getElementById('pdf-name').innerText = currentTrackedData.name;
+    document.getElementById('pdf-empid').innerText = currentTrackedData.empId || "غير متوفر";
+    document.getElementById('pdf-job').innerText = currentTrackedData.jobTitle;
+    document.getElementById('pdf-date').innerText = currentTrackedData.date;
+    document.getElementById('pdf-exit').innerText = currentTrackedData.exit;
+    document.getElementById('pdf-return').innerText = currentTrackedData.return;
+    document.getElementById('pdf-type').innerText = currentTrackedData.type;
+    document.getElementById('pdf-reqid').innerText = currentTrackedData.reqId;
+    document.getElementById('pdf-reason').innerText = currentTrackedData.reason;
+    document.getElementById('pdf-coverage').innerText = currentTrackedData.coverage || "لا يوجد حصص مسجلة في التغطية.";
+
+    const element = document.getElementById('pdf-template');
+    element.classList.remove('hidden');
+
+    const opt = {
+      margin:       0,
+      filename:     `استئذان_${currentTrackedData.name}_${currentTrackedData.reqId}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.classList.add('hidden');
+    });
+  }
+
+  // أدوات
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
+
+  Object.assign(window, {
+    showTrackingScreen, trackRequest, verifyEmp, calcDuration, submitRequest,
+    sendWhatsApp, askPassword, fetchRequest, approveRequest, sendAutoWhatsApp,
+    loadStats, addCoverageEntry, removeCoverageEntry, switchAdminTab,
+    renderEmployeesList, openAddEmployeeForm, openEditEmployeeForm, closeEmployeeForm,
+    saveEmployee, deleteEmployee, downloadPDFFromTrack
+  });
+
+  loadAllEmployees();
+
+  window.addEventListener('error', e => { console.error('Error:', e.error || e.message); });
+  window.addEventListener('unhandledrejection', e => { console.error('Async error:', e.reason); });
+</script>
+</body>
+</html>
