@@ -9,61 +9,70 @@
     :root { --primary: #8a1538; --primary-light: #a61b45; --gold: #d4af37; --bg: #0f172a; --card-bg: rgba(255, 255, 255, 0.98); }
     * { box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif; }
     body { margin: 0; padding: 20px; background: linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%); direction: rtl; color: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    
     .animated-wrapper { background: linear-gradient(270deg, var(--primary), var(--gold), #17a2b8, var(--primary-light)); background-size: 800% 800%; animation: gradientBorder 6s ease infinite; padding: 6px; border-radius: 20px; width: 100%; max-width: 650px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    
     .card { background: var(--card-bg); border-radius: 14px; padding: 25px 20px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
     .header-title { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
     .header-title h1 { color: var(--primary); margin: 10px 0 5px 0; font-size: 1.4rem; font-weight: 800; }
     .header-title p { color: #666; margin: 0; font-size: 0.95rem; font-weight: 600; }
-    
     .school-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
     .school-logo { width: 100%; max-width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
-
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
     input, select, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: 'Cairo', sans-serif; background: #f9f9f9; transition: all 0.3s ease; }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(138, 21, 56, 0.1); outline: none; }
-
+    input:disabled, select:disabled { background: #eee; color: #888; }
     .btn { padding: 14px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 1rem; width: 100%; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
     .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 4px 15px rgba(138, 21, 56, 0.3); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(138, 21, 56, 0.4); }
     .btn-wa { background: #25D366; color: white; margin-top: 10px; display: none; }
     .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); margin-top: 10px; }
-
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-sm { padding: 8px 12px; font-size: 0.85rem; width: auto; }
     .emp-info-box { background: #fff8f9; border: 1px solid #f5d6dc; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
     .emp-info-box p { margin: 5px 0; font-size: 0.95rem; color: #555; }
     .emp-info-box strong { color: var(--primary); }
     .balance-badge { display: inline-block; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-
     .hidden { display: none !important; }
-    .row { display: flex; gap: 10px; }
-    
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 140px; }
     .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .stat-box { background: white; border-right: 5px solid var(--primary); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .stat-box h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #666; }
     .stat-box .value { font-size: 2rem; font-weight: bold; color: var(--primary); }
-    
     .secret-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
     .secret-btn { background: #e9ecef; color: #555; padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; font-family: 'Cairo'; font-weight: bold; transition: 0.3s; }
     .secret-btn:hover { background: var(--primary); color: white; }
-
-    /* شريط الحالة (Tracking) */
     .status-track { display: flex; justify-content: space-between; margin: 20px 0; position: relative; }
     .status-track::before { content: ''; position: absolute; top: 15px; left: 10%; right: 10%; height: 4px; background: #e0e0e0; z-index: 1; }
-    .status-step { position: relative; z-index: 2; text-align: center; width: 30%; }
+    .status-step { position: relative; z-index: 2; text-align: center; width: 22%; }
     .status-circle { width: 30px; height: 30px; border-radius: 50%; background: #e0e0e0; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-size: 0.8rem; font-weight: bold; }
     .status-step.active .status-circle { background: var(--primary); box-shadow: 0 0 10px rgba(138, 21, 56, 0.4); }
     .status-step.rejected .status-circle { background: #dc3545; }
     .status-step p { font-size: 0.75rem; margin: 0; font-weight: bold; color: #777; }
     .status-step.active p { color: var(--primary); }
     .status-step.rejected p { color: #dc3545; }
+    table.data-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; }
+    table.data-table th, table.data-table td { padding: 8px; border: 1px solid #ddd; }
+    table.data-table thead { background: #eef2f7; }
+    table.data-table tr:nth-child(even) { background: #f9f9f9; }
+    .coverage-entry { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+    .coverage-entry h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 0.95rem; }
+    .checkbox-row { display: flex; align-items: flex-start; gap: 8px; background: #fff8f9; padding: 12px; border-radius: 10px; border: 1px solid #f5d6dc; margin-bottom: 12px; }
+    .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; }
+    .checkbox-row label { margin: 0; font-size: 0.9rem; color: #444; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
+    .tab { padding: 8px 14px; border-radius: 8px; background: #eee; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .tab.active { background: var(--primary); color: white; }
+    .employee-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 8px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+    .employee-row > span { flex: 1; min-width: 100px; }
+    .error-msg { color: #dc3545; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px; }
+    .success-msg { color: #28a745; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- بوابة الموظف -->
   <div id="employeePortal" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
     <div class="animated-wrapper" id="loginCard">
       <div class="card">
@@ -77,14 +86,11 @@
           <input type="text" id="empIdInput" placeholder="مثال: 114945" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         </div>
         <button class="btn btn-primary" onclick="verifyEmp()">تسجيل الدخول</button>
-        
-        <!-- زر تتبع الطلب -->
         <button class="btn btn-outline" onclick="showTrackingScreen()">🔍 تتبع حالة طلب سابق</button>
-        <p id="loginError" style="color:#dc3545; text-align:center; margin-top:15px; font-weight:bold; font-size:0.9rem;"></p>
+        <p id="loginError" class="error-msg"></p>
       </div>
     </div>
 
-    <!-- شاشة تتبع الطلب -->
     <div id="trackScreen" class="animated-wrapper hidden">
       <div class="card">
         <div class="header-title"><h1>تتبع حالة الطلب</h1></div>
@@ -94,26 +100,14 @@
         </div>
         <button class="btn btn-primary" onclick="trackRequest()">بحث</button>
         <button class="btn btn-outline" onclick="location.reload()">رجوع</button>
-
-        <!-- نتيجة التتبع -->
         <div id="trackResult" class="hidden" style="margin-top:20px; background:#f8f9fa; padding:15px; border-radius:10px;">
           <h3 style="color:var(--primary); margin-top:0; text-align:center;">حالة الطلب: <span id="trkStatusText"></span></h3>
-          
           <div class="status-track">
-            <div class="status-step" id="step1">
-              <div class="status-circle">1</div><p>المعلم</p>
-            </div>
-            <div class="status-step" id="step2">
-              <div class="status-circle">2</div><p>المنسق</p>
-            </div>
-            <div class="status-step" id="step3">
-              <div class="status-circle">3</div><p>النائب</p>
-            </div>
-            <div class="status-step" id="step4">
-              <div class="status-circle">4</div><p>المدير</p>
-            </div>
+            <div class="status-step" id="step1"><div class="status-circle">1</div><p>المعلم</p></div>
+            <div class="status-step" id="step2"><div class="status-circle">2</div><p>المنسق</p></div>
+            <div class="status-step" id="step3"><div class="status-circle">3</div><p>النائب</p></div>
+            <div class="status-step" id="step4"><div class="status-circle">4</div><p>المدير</p></div>
           </div>
-          
           <p id="trkNote" style="text-align:center; font-weight:bold; margin-top:15px;"></p>
         </div>
       </div>
@@ -122,10 +116,24 @@
     <div id="formScreen" class="animated-wrapper hidden">
       <div class="card">
         <div class="header-title"><h1>طلب استئذان جديد</h1></div>
-        <div class="emp-info-box">
-          <p>مرحباً، <strong><span id="empName"></span></strong></p>
-          <p>المسمى: <span id="empJob"></span></p>
-          <p>الرصيد المتبقي: <span id="empBalance" class="balance-badge"></span></p>
+        <div class="emp-info-box" id="empFullInfo"></div>
+
+        <div class="form-group" id="subjectGroup">
+          <label for="subjectSelect">المادة الدراسية (لتحديد منسق المادة)</label>
+          <select id="subjectSelect" required>
+            <option value="">-- اختر المادة --</option>
+            <option value="اللغة العربية">اللغة العربية</option>
+            <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+            <option value="الرياضيات">الرياضيات</option>
+            <option value="العلوم">العلوم</option>
+            <option value="العلوم الاجتماعية">العلوم الاجتماعية</option>
+            <option value="الفنون البصرية">الفنون البصرية</option>
+            <option value="التربية الرياضية">التربية الرياضية</option>
+            <option value="تكنولوجيا المعلومات">تكنولوجيا المعلومات</option>
+            <option value="العلوم الشرعية">العلوم الشرعية</option>
+            <option value="أخرى">أخرى / لا تنطبق</option>
+          </select>
+          <small id="routingNote" style="display:block;color:#52606d;margin-top:6px;">سيُرسل إشعار واتساب إلى منسق المادة المختارة.</small>
         </div>
 
         <div class="form-group">
@@ -140,19 +148,29 @@
         </div>
         <div class="form-group"><label>التاريخ</label><input type="date" id="permDate"></div>
         <div class="row">
-          <div class="form-group" style="flex:1;"><label>وقت الخروج</label><input type="time" id="exitTime" onchange="calcDuration()"></div>
-          <div class="form-group" style="flex:1;"><label>وقت العودة</label><input type="time" id="returnTime" onchange="calcDuration()"></div>
+          <div class="form-group"><label>وقت الخروج</label><input type="time" id="exitTime" onchange="calcDuration()"></div>
+          <div class="form-group"><label>وقت العودة</label><input type="time" id="returnTime" onchange="calcDuration()"></div>
         </div>
         <div class="form-group"><label>سبب الاستئذان</label><input type="text" id="reason" placeholder="اذكر السبب..."></div>
-        
+
+        <!-- تغطية الحصص بقوائم منسدلة -->
         <div class="form-group">
-          <label>تغطية الحصص (اذكر الحصص التي لديك وقت الإذن)</label>
-          <textarea id="coverage" rows="2" placeholder="مثال: الحصة الثالثة - 5/1 - الأستاذ محمد"></textarea>
+          <label>تغطية الحصص (أضف حصة واحدة على الأقل)</label>
+          <div id="coverageEntries"></div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addCoverageEntry()" style="margin-top:8px;">➕ إضافة حصة تغطية</button>
+        </div>
+
+        <!-- تعهد -->
+        <div class="checkbox-row">
+          <input type="checkbox" id="teacherConsent">
+          <label for="teacherConsent">
+            أتعهد بأن المعلم البديل <strong>موافق</strong> على تغطية/تبديل الحصة المذكورة أعلاه، وأتحمل مسؤولية صحة البيانات.
+          </label>
         </div>
 
         <button class="btn btn-primary" id="submitBtn" onclick="submitRequest()">إرسال الطلب</button>
-        <button class="btn btn-wa" id="waBtn" onclick="sendWhatsApp()">📱 إرسال إشعار للمنسق (واتساب)</button>
-        
+        <button class="btn btn-wa" id="waBtn" onclick="sendWhatsApp()">📱 إرسال إشعار واتساب للمستلم الصحيح</button>
+
         <div id="successBox" class="hidden" style="text-align:center; margin-top:15px; background:#e8f5e9; padding:15px; border-radius:10px; border:1px solid #c8e6c9;">
           <p style="color:#2e7d32; font-weight:bold; margin:0 0 5px 0;">✅ تم حفظ طلبك بنجاح!</p>
           <p style="font-size:1.2rem; font-weight:bold; color:#1b5e20; margin:0;">رقم الطلب: <span id="displayReqId"></span></p>
@@ -161,7 +179,6 @@
     </div>
   </div>
 
-  <!-- الأزرار السرية للأدوار -->
   <div class="secret-buttons" id="secretButtons">
     <button class="secret-btn" onclick="askPassword('coordinator')">المنسق</button>
     <button class="secret-btn" onclick="askPassword('vp')">النائب الأكاديمي</button>
@@ -173,7 +190,6 @@
   <div id="approvalScreen" class="animated-wrapper hidden">
     <div class="card">
       <div class="header-title"><h1 id="approvalTitle">اعتماد الطلبات</h1></div>
-      
       <div id="searchBox">
         <div class="form-group">
           <label>أدخل رقم الطلب (مثال: REQ-1234)</label>
@@ -181,7 +197,6 @@
           <button class="btn btn-primary" onclick="fetchRequest()" style="margin-top:10px;">بحث</button>
         </div>
       </div>
-
       <div id="requestDetails" class="hidden" style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:20px;">
         <h3 style="color:var(--primary); margin-top:0;">تفاصيل الطلب</h3>
         <p><strong>الموظف:</strong> <span id="detName"></span></p>
@@ -189,11 +204,10 @@
         <p><strong>السبب:</strong> <span id="detReason"></span></p>
         <p><strong>تغطية الحصص:</strong> <span id="detCoverage" style="color:#dc3545;"></span></p>
         <p><strong>الحالة:</strong> <span id="detStatus" class="balance-badge"></span></p>
-        
         <hr style="margin:15px 0;">
         <div style="display:flex; gap:10px;">
-          <button class="btn btn-primary" style="background:#28a745;" onclick="approveRequest('approved')">✅ موافقة</button>
-          <button class="btn btn-primary" style="background:#dc3545;" onclick="approveRequest('rejected')">❌ رفض</button>
+          <button class="btn btn-success" onclick="approveRequest('approved')">✅ موافقة</button>
+          <button class="btn btn-danger" onclick="approveRequest('rejected')">❌ رفض</button>
         </div>
         <p id="approveMsg" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
       </div>
@@ -202,52 +216,137 @@
   </div>
 
   <!-- لوحة الإدارة -->
-  <div id="adminDashboard" class="animated-wrapper hidden" style="max-width: 800px;">
+  <div id="adminDashboard" class="animated-wrapper hidden" style="max-width: 1000px;">
     <div class="card">
-      <div class="header-title"><h1>لوحة الإحصائيات</h1></div>
-      <div class="admin-grid" id="statsGrid"></div>
+      <div class="header-title"><h1>لوحة الإدارة والإحصائيات</h1></div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="stats" onclick="switchAdminTab('stats')">📊 الإحصائيات</div>
+        <div class="tab" data-tab="employees" onclick="switchAdminTab('employees')">👥 إدارة المعلمين</div>
+      </div>
+
+      <!-- تبويب الإحصائيات -->
+      <div id="tabStats">
+        <div class="admin-grid" id="statsGrid"></div>
+        <div id="teacherStatsWrap"></div>
+      </div>
+
+      <!-- تبويب إدارة المعلمين -->
+      <div id="tabEmployees" class="hidden">
+        <div class="form-group">
+          <label>بحث بالاسم أو الرقم</label>
+          <input type="text" id="empSearchInput" placeholder="اكتب للبحث..." oninput="renderEmployeesList()">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddEmployeeForm()" style="margin-bottom:12px;">➕ إضافة معلم جديد</button>
+        <div id="employeesList" style="max-height:500px; overflow-y:auto;"></div>
+      </div>
+
       <button class="btn" style="background:#ccc; margin-top:15px;" onclick="location.reload()">رجوع</button>
     </div>
   </div>
 
-<script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbx6RurzgJYqgvLoTGwIhs4mgTBo63gzNsaghf94aaLwZgb31y9axkJSm7YAbKCehuQ_/exec';
-  const JSON_URL = 'encoded_data.txt';
-  
-  const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
+  <!-- نموذج إضافة/تعديل معلم -->
+  <div id="employeeFormScreen" class="animated-wrapper hidden" style="max-width:700px;">
+    <div class="card">
+      <div class="header-title"><h1 id="empFormTitle">إضافة معلم جديد</h1></div>
+      <input type="hidden" id="empFormId">
+      <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="efName"></div>
+      <div class="row">
+        <div class="form-group"><label>الجنسية</label><input type="text" id="efNationality"></div>
+        <div class="form-group"><label>المسمى الوظيفي *</label><input type="text" id="efJobTitle"></div>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>الرقم الشخصي</label><input type="text" id="efPersonalId"></div>
+        <div class="form-group"><label>الرقم الوظيفي *</label><input type="text" id="efEmployeeId"></div>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>الهاتف</label><input type="text" id="efPhone" placeholder="مثال: 33337801"></div>
+        <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="efEmail"></div>
+      </div>
+      <div class="form-group"><label>الرصيد الابتدائي (دقائق)</label><input type="number" id="efBalance" value="600"></div>
+      <p id="empFormMsg" style="text-align:center; font-weight:bold;"></p>
+      <button class="btn btn-primary" onclick="saveEmployee()">💾 حفظ</button>
+      <button class="btn btn-outline" onclick="closeEmployeeForm()">إلغاء</button>
+    </div>
+  </div>
 
-  const COORDINATORS_PHONES = {
-    'عربي': '97433337801', 'انجليزي': '97433337802', 'رياضيات': '97433337803', 
-    'علوم': '97433337804', 'اجتماعيات': '97433337805', 'فنون': '97433337806', 
-    'تكنولوجيا': '97433337807', 'رياضية': '97430700530', 'default': '97433337801'
-  };
-  const VP_PHONE = "97433337801"; 
+<script>
+  const API_URL =                                   
+'https://script.google.com/macros/s/AKfycbzO-7XDicKM_xnvT789Q7ajjMK4O5NjGeHO1etHtryyVAjTn3JcIZWCRVzp81KnxIf4/exec';
+  const JSON_URL = 'encoded_data.txt';
+  const PASSWORDS = { coordinator: "1234", vp: "5678", principal: "9999", admin: "admin123" };
+  const VP_PHONE = "97433337801";
+  const PRINCIPAL_PHONE = "97450711122"; // عثمان عيسى زيد السويدان - مدير المدرسة
+
+  const SUBJECTS = ["اللغة العربية", "اللغة الإنجليزية", "الرياضيات", "العلوم",
+    "العلوم الاجتماعية", "الفنون البصرية", "التربية الرياضية",
+    "تكنولوجيا المعلومات", "العلوم الشرعية"];
+  const DAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
+  const PERIODS = ["الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة", "السابعة"];
+
+  let ALL_EMPLOYEES = [];
+  let SUBJECT_COORDINATORS = {}; // يُبنى ديناميكياً من ALL_EMPLOYEES
 
   let currentEmp = null;
   let currentRole = null;
-  let currentCoordinatorPhone = ""; 
   let savedReqId = "";
+  let coverageCounter = 0;
 
-  async function fetchEmployees() {
+  // ---------- تحميل بيانات الموظفين ----------
+  async function loadAllEmployees() {
     try {
       const res = await fetch(JSON_URL, { cache: 'no-store' });
-      if (!res.ok) throw new Error('تعذر تحميل ملف بيانات الموظفين: ' + res.status);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       const b64 = (await res.text()).replace(/\s/g, '');
       const binary = window.atob(b64);
       const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
       const decoded = new TextDecoder('utf-8').decode(bytes);
-      const data = JSON.parse(decoded);
-      if (!Array.isArray(data)) throw new Error('تنسيق ملف بيانات الموظفين غير صحيح.');
-      return data;
+      ALL_EMPLOYEES = JSON.parse(decoded);
+      buildCoordinatorMap();
+      return ALL_EMPLOYEES;
     } catch(e) {
-      console.error('fetchEmployees:', e);
+      console.error('loadAllEmployees:', e);
       const errorEl = document.getElementById('loginError');
-      if (errorEl) errorEl.innerText = 'تعذر تحميل بيانات الموظفين. تحقق من وجود encoded_data.txt في مجلد النشر.';
+      if (errorEl) errorEl.innerText = 'تعذر تحميل بيانات الموظفين. تأكد من وجود encoded_data.txt.';
       return [];
     }
   }
 
-  // ---------------- 1. واجهة تتبع الطلب ----------------
+  // بناء خريطة منسقي المواد ديناميكياً من بيانات الموظفين الحقيقية
+  function buildCoordinatorMap() {
+    SUBJECT_COORDINATORS = {};
+    SUBJECTS.forEach(subject => {
+      const coord = ALL_EMPLOYEES.find(e => {
+        const job = String(e.jobTitle || '');
+        // منسق المادة يحتوي مسماه على "منسق" + اسم المادة (أو مرادف)
+        const map = {
+          'اللغة العربية': ['لغة العربية', 'اللغة العربية', 'عربية'],
+          'اللغة الإنجليزية': ['لغة انجليزية', 'اللغة الإنجليزية', 'إنجليزية', 'انجليزية'],
+          'الرياضيات': ['رياضيات'],
+          'العلوم': ['علوم'],
+          'العلوم الاجتماعية': ['علوم اجتماعية'],
+          'الفنون البصرية': ['فنون بصرية', 'فنون'],
+          'التربية الرياضية': ['تربية رياضية', 'رياضية'],
+          'تكنولوجيا المعلومات': ['حوسبة', 'تكنولوجيا المعلومات'],
+          'العلوم الشرعية': ['علوم شرعية', 'شرعية']
+        };
+        const keys = map[subject] || [];
+        return keys.some(k => job.includes(k)) && (job.includes('منسق') || job.includes('منسقة'));
+      });
+      if (coord && coord.phone) {
+        const phone = String(coord.phone).replace(/[^0-9]/g, '');
+        // تأكد من أن الرقم قطري (8 أرقام) مع رمز 974
+        const full = phone.startsWith('974') ? phone : ('974' + phone);
+        SUBJECT_COORDINATORS[subject] = {
+          phone: full,
+          name: coord.name,
+          employeeId: coord.employeeId
+        };
+      }
+    });
+  }
+
+  // ---------- 1. تتبع الطلب ----------
   function showTrackingScreen() {
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('trackScreen').classList.remove('hidden');
@@ -256,93 +355,165 @@
   async function trackRequest() {
     const reqId = document.getElementById('trackReqId').value.trim();
     if(!reqId) return;
-
     const formData = new URLSearchParams();
     formData.append('action', 'getRequest'); formData.append('reqId', reqId);
-
     try {
       const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
       const result = await res.json();
-
       if(result.success) {
         document.getElementById('trackResult').classList.remove('hidden');
         const status = result.data.status;
-        
-        // تصفير الشريط
         ['step1','step2','step3','step4'].forEach(id => document.getElementById(id).className = 'status-step');
-        document.getElementById('step1').classList.add('active'); // دائماً المعلم نشط لأنه قدم الطلب
-
+        document.getElementById('step1').classList.add('active');
         if(status === 'pending') {
           document.getElementById('trkStatusText').innerText = "بانتظار المنسق";
           document.getElementById('trkNote').innerText = "طلبك قيد المراجعة من قبل منسق القسم.";
-        } 
-        else if(status === 'coordinator_approved') {
+        } else if(status === 'coordinator_approved') {
           document.getElementById('step2').classList.add('active');
           document.getElementById('trkStatusText').innerText = "بانتظار النائب الأكاديمي";
           document.getElementById('trkNote').innerText = "تمت موافقة المنسق، والطلب الآن لدى النائب.";
-        }
-        else if(status === 'vp_approved') {
+        } else if(status === 'vp_approved') {
           document.getElementById('step2').classList.add('active');
           document.getElementById('step3').classList.add('active');
           document.getElementById('trkStatusText').innerText = "بانتظار المدير";
           document.getElementById('trkNote').innerText = "تمت موافقة النائب، والطلب الآن لدى المدير للاعتماد النهائي.";
-        }
-        else if(status === 'principal_approved') {
+        } else if(status === 'principal_approved') {
           document.getElementById('step2').classList.add('active');
           document.getElementById('step3').classList.add('active');
           document.getElementById('step4').classList.add('active');
           document.getElementById('trkStatusText').innerText = "✅ معتمد نهائياً (مقبول)";
-          document.getElementById('trkNote').innerHTML = `<span style="color:#28a745">تمت الموافقة النهائية من مدير المدرسة. يرجى التوجه لمدير البوابة لاستلام كود الخروج.</span>`;
-        }
-        else if(status.includes('rejected')) {
+          document.getElementById('trkNote').innerHTML = `<span style="color:#28a745">تمت الموافقة النهائية من مدير المدرسة.</span>`;
+        } else if(status.includes('rejected')) {
           document.getElementById('step2').classList.add('rejected');
           document.getElementById('trkStatusText').innerText = "❌ مرفوض";
-          document.getElementById('trkNote').innerHTML = `<span style="color:#dc3545">تم رفض الطلب. يرجى مراجعة إدارة المدرسة للمزيد من التفاصيل.</span>`;
+          document.getElementById('trkNote').innerHTML = `<span style="color:#dc3545">تم رفض الطلب.</span>`;
         }
-      } else {
-        alert(result.message);
-      }
-    } catch(e) {
-      alert("خطأ في الاتصال بالخادم");
-    }
+      } else { alert(result.message); }
+    } catch(e) { alert("خطأ في الاتصال بالخادم"); }
   }
 
-  // ---------------- 2. الوظائف السابقة ----------------
+  // ---------- 2. تسجيل الدخول ----------
   async function verifyEmp() {
     const id = document.getElementById('empIdInput').value.trim();
     if(!id) return;
-    const emps = await fetchEmployees();
-    if (!Array.isArray(emps) || emps.length === 0) {
-      document.getElementById('loginError').innerText =
-        'لم يتم تحميل بيانات الموظفين. تحقق من ملف encoded_data.txt ومن نشره على GitHub Pages.';
+    if (ALL_EMPLOYEES.length === 0) await loadAllEmployees();
+    if (ALL_EMPLOYEES.length === 0) return;
+
+    let emp = ALL_EMPLOYEES.find(e =>
+      String(e.employeeId || '') === id || String(e.personalId || '') === id);
+    if(!emp) {
+      document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة.";
       return;
     }
-    let emp = emps.find(e => String(e.employeeId || '') === id || String(e.personalId || '') === id);
-    if(!emp) { document.getElementById('loginError').innerText = "أنت غير مسجل بهذه المدرسة."; return; }
-    
-    if(emp.name.includes('كريم احمد')) { emp.name = "محمد عبد الله برمان الدوسري"; emp.jobTitle = "منسق تربية رياضية"; }
     currentEmp = emp;
 
-    let job = emp.jobTitle.toLowerCase();
-    if(job.includes('انجليزي') || job.includes('إنجليزية')) currentCoordinatorPhone = COORDINATORS_PHONES['انجليزي'];
-    else if(job.includes('عربي')) currentCoordinatorPhone = COORDINATORS_PHONES['عربي'];
-    else if(job.includes('رياضيات')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضيات'];
-    else if(job.includes('علوم') && !job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['علوم'];
-    else if(job.includes('اجتماعيات') || job.includes('اجتماعية')) currentCoordinatorPhone = COORDINATORS_PHONES['اجتماعيات'];
-    else if(job.includes('فنون')) currentCoordinatorPhone = COORDINATORS_PHONES['فنون'];
-    else if(job.includes('تكنولوجيا') || job.includes('حاسب')) currentCoordinatorPhone = COORDINATORS_PHONES['تكنولوجيا'];
-    else if(job.includes('رياضية') || job.includes('رياضه')) currentCoordinatorPhone = COORDINATORS_PHONES['رياضية'];
-    else currentCoordinatorPhone = VP_PHONE; 
+    const job = String(emp.jobTitle || '').trim();
+    const isCoordinator = job.includes('منسق') || job.includes('منسقة');
+    const isProjectCoordinator = job.includes('مشاريع');
+    const isTheatreArtsTeacher = job.includes('مسرحية') || job.includes('مسرح');
+    const sendDirectlyToVP = isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
 
-    const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
-    const bal = await res.json();
-    
+    const subjectSelect = document.getElementById('subjectSelect');
+    const subjectGroup = document.getElementById('subjectGroup');
+    const routingNote = document.getElementById('routingNote');
+    if (subjectSelect) {
+      subjectSelect.value = '';
+      subjectSelect.disabled = sendDirectlyToVP;
+      subjectSelect.required = !sendDirectlyToVP;
+    }
+    if (subjectGroup) subjectGroup.style.display = sendDirectlyToVP ? 'none' : 'block';
+    if (routingNote) {
+      routingNote.innerText = sendDirectlyToVP
+        ? 'سيُرسل إشعار واتساب مباشرة إلى النائب الأكاديمي.'
+        : 'اختر المادة ليُرسل إشعار واتساب إلى منسقها الصحيح.';
+    }
+
+    // جلب الرصيد من الخادم
+    let balance = 600;
+    try {
+      const res = await fetch(`${API_URL}?action=getBalance&empId=${emp.employeeId}`);
+      const bal = await res.json();
+      if (bal && typeof bal.balance === 'number') balance = bal.balance;
+    } catch(e) { /* استخدم الافتراضي */ }
+
+    // عرض كل بيانات المعلم
+    document.getElementById('empFullInfo').innerHTML = `
+      <p>مرحباً، <strong>${escapeHtml(emp.name)}</strong></p>
+      <p>المسمى: <span>${escapeHtml(emp.jobTitle || '')}</span></p>
+      <p>الجنسية: <span>${escapeHtml(emp.nationality || '')}</span></p>
+      <p>الرقم الوظيفي: <span>${escapeHtml(emp.employeeId || '')}</span></p>
+      <p>الرقم الشخصي: <span>${escapeHtml(emp.personalId || '')}</span></p>
+      <p>الهاتف: <span>${escapeHtml(emp.phone || '')}</span></p>
+      <p>البريد: <span>${escapeHtml(emp.email || '')}</span></p>
+      <p>الرصيد المتبقي: <span class="balance-badge">${balance} دقيقة</span></p>
+    `;
+
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('formScreen').classList.remove('hidden');
-    document.getElementById('empName').innerText = emp.name;
-    document.getElementById('empJob').innerText = emp.jobTitle;
-    document.getElementById('empBalance').innerText = (bal.balance || 600) + " دقيقة";
     document.getElementById('permDate').valueAsDate = new Date();
+
+    // إضافة حصة تغطية افتراضية
+    if (document.getElementById('coverageEntries').children.length === 0) {
+      addCoverageEntry();
+    }
+  }
+
+  // ---------- 3. تغطية الحصص بقوائم منسدلة ----------
+  function addCoverageEntry() {
+    coverageCounter++;
+    const idx = coverageCounter;
+    const wrap = document.getElementById('coverageEntries');
+
+    const teacherOptions = ALL_EMPLOYEES
+      .filter(e => String(e.employeeId) !== String(currentEmp?.employeeId))
+      .map(e => `<option value="${escapeHtml(e.name)}" data-emp-id="${escapeHtml(e.employeeId)}">${escapeHtml(e.name)} — ${escapeHtml(e.jobTitle || '')}</option>`)
+      .join('');
+
+    const subjectOptions = SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+    const dayOptions = DAYS.map(d => `<option value="${d}">${d}</option>`).join('');
+    const periodOptions = PERIODS.map(p => `<option value="${p}">الحصة ${p}</option>`).join('');
+
+    const div = document.createElement('div');
+    div.className = 'coverage-entry';
+    div.dataset.entryId = idx;
+    div.innerHTML = `
+      <h4>تغطية حصة #${idx} <button type="button" class="btn btn-danger btn-sm" style="float:left;" onclick="removeCoverageEntry(${idx})">حذف</button></h4>
+      <div class="row">
+        <div class="form-group"><label>المادة</label><select class="cov-subject">${subjectOptions}</select></div>
+        <div class="form-group"><label>اليوم</label><select class="cov-day">${dayOptions}</select></div>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>التاريخ</label><input type="date" class="cov-date"></div>
+        <div class="form-group"><label>الحصة</label><select class="cov-period">${periodOptions}</select></div>
+      </div>
+      <div class="form-group"><label>المعلم البديل</label>
+        <select class="cov-teacher"><option value="">-- اختر المعلم البديل --</option>${teacherOptions}</select>
+      </div>
+    `;
+    wrap.appendChild(div);
+  }
+
+  function removeCoverageEntry(id) {
+    const entry = document.querySelector(`.coverage-entry[data-entry-id="${id}"]`);
+    if (entry) entry.remove();
+  }
+
+  function collectCoverageData() {
+    const entries = document.querySelectorAll('.coverage-entry');
+    const result = [];
+    entries.forEach(entry => {
+      const subject = entry.querySelector('.cov-subject').value;
+      const day = entry.querySelector('.cov-day').value;
+      const date = entry.querySelector('.cov-date').value;
+      const period = entry.querySelector('.cov-period').value;
+      const teacherSelect = entry.querySelector('.cov-teacher');
+      const teacher = teacherSelect.value;
+      const teacherEmpId = teacherSelect.selectedOptions[0]?.dataset?.empId || '';
+      if (subject && day && period && teacher) {
+        result.push({ subject, day, date, period, substituteTeacher: teacher, substituteEmpId: teacherEmpId });
+      }
+    });
+    return result;
   }
 
   function calcDuration() {
@@ -358,21 +529,50 @@
     return 0;
   }
 
+  // ---------- 4. إرسال الطلب ----------
   function submitRequest() {
     const date = document.getElementById('permDate').value;
     if(!date) { alert("يرجى تحديد التاريخ"); return; }
-    
+
+    if (!document.getElementById('teacherConsent').checked) {
+      alert("يجب الموافقة على التعهد قبل إرسال الطلب.");
+      return;
+    }
+
+    const coverageArr = collectCoverageData();
+    if (coverageArr.length === 0) {
+      alert("يرجى إضافة حصة تغطية واحدة على الأقل بجميع بياناتها.");
+      return;
+    }
+
+    const coverageText = coverageArr.map(c =>
+      `${c.subject} | ${c.day} ${c.date} | الحصة ${c.period} | البديل: ${c.substituteTeacher}`
+    ).join('\n');
+
+    savedReqId = 'REQ-' + Math.floor(10000 + Math.random() * 90000);
+
     const data = {
-      empId: currentEmp.employeeId, name: currentEmp.name, jobTitle: currentEmp.jobTitle,
-      permissionType: document.getElementById('permType').value, date: date,
-      exitTime: document.getElementById('exitTime').value, returnTime: document.getElementById('returnTime').value,
-      reason: document.getElementById('reason').value, coverage: document.getElementById('coverage').value,
-      duration: calcDuration()
+      reqId: savedReqId,
+      empId: currentEmp.employeeId,
+      name: currentEmp.name,
+      jobTitle: currentEmp.jobTitle,
+      phone: currentEmp.phone || '',
+      email: currentEmp.email || '',
+      permissionType: document.getElementById('permType').value,
+      date: date,
+      subject: (document.getElementById('subjectSelect') && !document.getElementById('subjectSelect').disabled)
+        ? document.getElementById('subjectSelect').value : 'إرسال مباشر للنائب الأكاديمي',
+      exitTime: document.getElementById('exitTime').value,
+      returnTime: document.getElementById('returnTime').value,
+      reason: document.getElementById('reason').value,
+      coverage: coverageText,
+      coverageDetails: coverageArr,
+      duration: calcDuration(),
+      consent: true
     };
 
     document.getElementById('submitBtn').innerText = "جاري الحفظ...";
     document.getElementById('submitBtn').disabled = true;
-    savedReqId = 'REQ-' + Math.floor(Math.random() * 10000);
 
     const iframeName = 'hidden_iframe_' + Date.now();
     const iframe = document.createElement('iframe');
@@ -385,41 +585,83 @@
     formData.append('action', 'submit'); formData.append('data', JSON.stringify(data));
 
     for (const [key, value] of formData.entries()) {
-      const input = document.createElement('input'); input.type = 'hidden'; input.name = key; input.value = value; form.appendChild(input);
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = key; input.value = value;
+      form.appendChild(input);
     }
     document.body.appendChild(form); form.submit();
 
     setTimeout(() => {
       document.getElementById('successBox').classList.remove('hidden');
       document.getElementById('displayReqId').innerText = savedReqId;
-      document.getElementById('waBtn').style.display = 'block'; 
+      document.getElementById('waBtn').style.display = 'block';
       document.getElementById('submitBtn').innerText = "إرسال الطلب";
       document.getElementById('submitBtn').disabled = false;
       document.body.removeChild(form); document.body.removeChild(iframe);
-      verifyEmp(); 
-    }, 2000);
+    }, 2500);
   }
 
+  // ---------- 5. إرسال واتساب (مصحّح) ----------
   function sendWhatsApp() {
-    const msg = `السلام عليكم،\nالمعلم: ${currentEmp.name}\nقدّم طلب استئذان جديد.\nرقم الطلب: ${savedReqId}\nنوع الإذن: ${document.getElementById('permType').value}\nتغطية الحصص: ${document.getElementById('coverage').value}`;
+    if (!currentEmp) { alert('يرجى تسجيل الدخول أولاً.'); return; }
+
+    const job = String(currentEmp.jobTitle || '').trim();
+    const isCoordinator = job.includes('منسق') || job.includes('منسقة');
+    const isProjectCoordinator = job.includes('مشاريع');
+    const isTheatreArtsTeacher = job.includes('مسرحية') || job.includes('مسرح');
+    const sendDirectlyToVP = isCoordinator || isProjectCoordinator || isTheatreArtsTeacher;
+
+    let recipientPhone = VP_PHONE;
+    let recipientName = 'النائب الأكاديمي';
+    let subject = 'إرسال مباشر للنائب الأكاديمي';
+
+    if (!sendDirectlyToVP) {
+      const subjectSelect = document.getElementById('subjectSelect');
+      subject = subjectSelect ? subjectSelect.value : '';
+      if (!subject) {
+        alert('يرجى تحديد المادة أولاً حتى يتم إرسال الإشعار إلى منسقها.');
+        if (subjectSelect) subjectSelect.focus();
+        return;
+      }
+      const coordInfo = SUBJECT_COORDINATORS[subject];
+      if (!coordInfo || !coordInfo.phone) {
+        alert(`لم يُعثر على رقم منسق مادة "${subject}" في بيانات المدرسة. تأكد من أن مسمّى المنسق يحتوي على كلمة "منسق" واسم المادة.`);
+        return;
+      }
+      recipientPhone = coordInfo.phone;
+      recipientName = `منسق مادة ${subject} (${coordInfo.name})`;
+    }
+
+    const coverageArr = collectCoverageData();
+    const coverageText = coverageArr.map(c =>
+      `• ${c.subject} - ${c.day} ${c.date} - الحصة ${c.period} - البديل: ${c.substituteTeacher}`
+    ).join('\n');
+
+    const msg = `السلام عليكم،\nالمعلم: ${currentEmp.name}\nالمسمى: ${currentEmp.jobTitle}\nالمستلم: ${recipientName}\nالمادة: ${subject}\nقدّم طلب استئذان جديد.\nرقم الطلب: ${savedReqId}\nنوع الإذن: ${document.getElementById('permType').value}\nالتاريخ: ${document.getElementById('permDate').value}\nتغطية الحصص:\n${coverageText || 'لا يوجد'}`;
+
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const url = isMobile ? `whatsapp://send?phone=${currentCoordinatorPhone}&text=${encodeURIComponent(msg)}` : `https://web.whatsapp.com/send?phone=${currentCoordinatorPhone}&text=${encodeURIComponent(msg)}`;
+    const url = isMobile
+      ? `whatsapp://send?phone=${recipientPhone}&text=${encodeURIComponent(msg)}`
+      : `https://web.whatsapp.com/send?phone=${recipientPhone}&text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }
 
+  // ---------- 6. الاعتماد ----------
   function askPassword(role) {
     const pass = prompt("أدخل كلمة المرور الخاصة بك:");
     if (pass === PASSWORDS[role]) {
       currentRole = role;
       document.getElementById('employeePortal').classList.add('hidden');
       document.getElementById('secretButtons').classList.add('hidden');
-      
       if (role === 'admin') {
         document.getElementById('adminDashboard').classList.remove('hidden');
         loadStats();
+        renderEmployeesList();
       } else {
         document.getElementById('approvalScreen').classList.remove('hidden');
-        document.getElementById('approvalTitle').innerText = role === 'coordinator' ? 'اعتماد المنسق' : (role === 'vp' ? 'اعتماد النائب الأكاديمي' : 'الاعتماد النهائي (المدير)');
+        document.getElementById('approvalTitle').innerText =
+          role === 'coordinator' ? 'اعتماد المنسق' :
+          role === 'vp' ? 'اعتماد النائب الأكاديمي' : 'الاعتماد النهائي (المدير)';
       }
     } else { alert("كلمة المرور خاطئة!"); }
   }
@@ -429,10 +671,8 @@
     if(!reqId) return;
     const formData = new URLSearchParams();
     formData.append('action', 'getRequest'); formData.append('reqId', reqId);
-
     const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
     const result = await res.json();
-
     if(result.success) {
       document.getElementById('requestDetails').classList.remove('hidden');
       document.getElementById('detName').innerText = result.data.name;
@@ -447,26 +687,19 @@
   async function approveRequest(decision) {
     const reqId = document.getElementById('searchReqId').dataset.currentId;
     if(!reqId) return;
-
     const formData = new URLSearchParams();
     formData.append('action', 'updateStatus'); formData.append('reqId', reqId);
     formData.append('role', currentRole); formData.append('decision', decision);
-
     document.getElementById('approveMsg').innerText = "جاري الحفظ...";
     const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
     const result = await res.json();
-
     if(result.success) {
       document.getElementById('approveMsg').innerText = `✅ تم تسجيل القرار: ${result.newStatus}`;
       document.getElementById('approveMsg').style.color = "#28a745";
-      
       if (currentRole === 'coordinator' && decision === 'approved') {
         sendAutoWhatsApp(VP_PHONE, reqId, "النائب الأكاديمي", "المنسق");
       } else if (currentRole === 'vp' && decision === 'approved') {
-        // إرسال واتساب تلقائي لمدير المدرسة (ضع رقم المدير هنا)
-        sendAutoWhatsApp("97412345678", reqId, "مدير المدرسة", "النائب الأكاديمي");
-      } else if (currentRole === 'principal' && decision === 'approved') {
-        // إرسال رسالة للمعلم بالاعتماد (رقم المعلم لم نجلبه هنا، يمكن إضافته لاحقاً)
+        sendAutoWhatsApp(PRINCIPAL_PHONE, reqId, "مدير المدرسة", "النائب الأكاديمي");
       }
     }
   }
@@ -478,53 +711,239 @@
     window.open(url, '_blank');
   }
 
+  // ---------- 7. لوحة الإدارة ----------
+  function switchAdminTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById('tabStats').classList.toggle('hidden', tab !== 'stats');
+    document.getElementById('tabEmployees').classList.toggle('hidden', tab !== 'employees');
+  }
+
   async function loadStats() {
-    const formData = new URLSearchParams();
-    formData.append('action', 'getStats');
-    const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-    const result = await res.json();
-    if(result.success) {
-      document.getElementById('statsGrid').innerHTML = `
-        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${result.total}</div></div>
-        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${result.academic}</div></div>
-        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${result.admin}</div></div>
+    const grid = document.getElementById('statsGrid');
+    grid.innerHTML = '<p>جاري تحميل الإحصائيات...</p>';
+    document.getElementById('teacherStatsWrap').innerHTML = '';
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', 'getStats');
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.message || 'تعذر تحميل الإحصائيات');
+
+      grid.innerHTML = `
+        <div class="stat-box"><h3>إجمالي الطلبات</h3><div class="value">${Number(result.total || 0)}</div></div>
+        <div class="stat-box" style="border-right-color:#28a745;"><h3>أكاديمي</h3><div class="value">${Number(result.academic || 0)}</div></div>
+        <div class="stat-box" style="border-right-color:#17a2b8;"><h3>إداري</h3><div class="value">${Number(result.admin || 0)}</div></div>
       `;
+
+      // جدول تفصيلي لكل معلم
+      const teachers = Array.isArray(result.teacherStats) ? result.teacherStats
+                     : (Array.isArray(result.teachers) ? result.teachers : []);
+      if (teachers.length) {
+        const rows = teachers.map(t => {
+          const balance = (t.remainingBalance ?? t.remaining ?? t.balance);
+          const exceeded = t.exceeded === true || (balance != null && Number(balance) <= 0);
+          return `<tr>
+            <td>${escapeHtml(t.name || t.teacher || 'غير محدد')}</td>
+            <td>${escapeHtml(t.jobTitle || '')}</td>
+            <td>${Number(t.count ?? t.totalRequests ?? t.requests ?? 0)}</td>
+            <td>${Number(t.usedMinutes ?? t.used ?? t.totalMinutes ?? 0)}</td>
+            <td>${balance == null ? 'غير متاح' : Number(balance) + ' دقيقة'}</td>
+            <td style="color:${exceeded ? '#dc3545' : '#28a745'};font-weight:bold;">${exceeded ? 'نعم' : 'لا'}</td>
+          </tr>`;
+        }).join('');
+        document.getElementById('teacherStatsWrap').innerHTML = `
+          <div style="overflow-x:auto;margin-top:15px;">
+            <h3>تفاصيل استئذانات المعلمين</h3>
+            <table class="data-table">
+              <thead><tr>
+                <th>المعلم</th><th>المسمى</th><th>عدد الطلبات</th>
+                <th>الدقائق المستخدمة</th><th>الرصيد المتبقي</th><th>نفد الرصيد؟</th>
+              </tr></thead><tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
+
+      const rankings = result.rankings || {};
+      const most = Array.isArray(rankings.mostRequests) ? rankings.mostRequests : [];
+      const mostMinutes = Array.isArray(rankings.mostMinutes) ? rankings.mostMinutes : [];
+      const exhausted = Array.isArray(rankings.exhausted) ? rankings.exhausted : [];
+
+      let rankHtml = '';
+      if (most.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>🏆 الأكثر تقديماً لطلبات الاستئذان</h3><ol>${
+          most.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.count || 0)} طلب</li>`).join('')
+        }</ol></div>`;
+      }
+      if (mostMinutes.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>⏱️ الأكثر استهلاكاً للدقائق</h3><ol>${
+          mostMinutes.map(x => `<li>${escapeHtml(x.name || 'غير محدد')} — ${Number(x.minutes || 0)} دقيقة</li>`).join('')
+        }</ol></div>`;
+      }
+      if (exhausted.length) {
+        rankHtml += `<div style="margin-top:15px;"><h3>⚠️ من نفد رصيده</h3><ul>${
+          exhausted.map(x => `<li>${escapeHtml(x.name || 'غير محدد')}</li>`).join('')
+        }</ul></div>`;
+      }
+      document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend', rankHtml);
+
+      if (!teachers.length && !most.length && !exhausted.length) {
+        document.getElementById('teacherStatsWrap').insertAdjacentHTML('beforeend',
+          `<div style="background:#fff8e1;padding:14px;border-radius:8px;margin-top:12px;">
+            <strong>لا توجد تفاصيل كافية من الخادم.</strong>
+            <p>يجب أن يعيد Code.gs الحقول teacherStats و rankings لتفعيل التحليل التفصيلي.</p>
+          </div>`);
+      }
+    } catch (e) {
+      grid.innerHTML = `<p style="color:#b00020;">تعذر تحميل الإحصائيات: ${escapeHtml(e.message || String(e))}</p>`;
     }
   }
 
-  // إتاحة الوظائف صراحةً لأزرار onclick في صفحة GitHub Pages.
-  // لا يغيّر ذلك أسماء الوظائف أو تصميم الصفحة.
+  // ---------- 8. إدارة المعلمين ----------
+  function renderEmployeesList() {
+    const query = (document.getElementById('empSearchInput')?.value || '').trim().toLowerCase();
+    const list = document.getElementById('employeesList');
+    const filtered = ALL_EMPLOYEES.filter(e => {
+      if (!query) return true;
+      return (e.name || '').toLowerCase().includes(query) ||
+             String(e.employeeId || '').includes(query) ||
+             String(e.personalId || '').includes(query) ||
+             (e.jobTitle || '').toLowerCase().includes(query);
+    });
+    if (filtered.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:#888;">لا يوجد نتائج.</p>';
+      return;
+    }
+    list.innerHTML = filtered.map(e => `
+      <div class="employee-row">
+        <span><strong>${escapeHtml(e.name)}</strong></span>
+        <span>${escapeHtml(e.jobTitle || '')}</span>
+        <span>وظيفي: ${escapeHtml(e.employeeId || '')}</span>
+        <span>هاتف: ${escapeHtml(e.phone || '')}</span>
+        <button class="btn btn-primary btn-sm" onclick="openEditEmployeeForm('${escapeHtml(e.id)}')">تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${escapeHtml(e.id)}','${escapeHtml(e.name)}')">حذف</button>
+      </div>
+    `).join('');
+  }
+
+  function openAddEmployeeForm() {
+    document.getElementById('empFormTitle').innerText = 'إضافة معلم جديد';
+    document.getElementById('empFormId').value = '';
+    ['efName','efNationality','efJobTitle','efPersonalId','efEmployeeId','efPhone','efEmail'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('efBalance').value = 600;
+    document.getElementById('empFormMsg').innerText = '';
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('employeeFormScreen').classList.remove('hidden');
+  }
+
+  function openEditEmployeeForm(id) {
+    const emp = ALL_EMPLOYEES.find(e => String(e.id) === String(id));
+    if (!emp) return;
+    document.getElementById('empFormTitle').innerText = 'تعديل بيانات معلم';
+    document.getElementById('empFormId').value = emp.id;
+    document.getElementById('efName').value = emp.name || '';
+    document.getElementById('efNationality').value = emp.nationality || '';
+    document.getElementById('efJobTitle').value = emp.jobTitle || '';
+    document.getElementById('efPersonalId').value = emp.personalId || '';
+    document.getElementById('efEmployeeId').value = emp.employeeId || '';
+    document.getElementById('efPhone').value = emp.phone || '';
+    document.getElementById('efEmail').value = emp.email || '';
+    document.getElementById('efBalance').value = 600;
+    document.getElementById('empFormMsg').innerText = '';
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('employeeFormScreen').classList.remove('hidden');
+  }
+
+  function closeEmployeeForm() {
+    document.getElementById('employeeFormScreen').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+  }
+
+  async function saveEmployee() {
+    const id = document.getElementById('empFormId').value;
+    const name = document.getElementById('efName').value.trim();
+    const jobTitle = document.getElementById('efJobTitle').value.trim();
+    const employeeId = document.getElementById('efEmployeeId').value.trim();
+    if (!name || !jobTitle || !employeeId) {
+      document.getElementById('empFormMsg').innerText = 'الاسم والمسمى والرقم الوظيفي مطلوبة.';
+      document.getElementById('empFormMsg').style.color = '#dc3545';
+      return;
+    }
+    const payload = {
+      id: id || '',
+      name, jobTitle, employeeId,
+      nationality: document.getElementById('efNationality').value.trim(),
+      personalId: document.getElementById('efPersonalId').value.trim(),
+      phone: document.getElementById('efPhone').value.trim(),
+      email: document.getElementById('efEmail').value.trim(),
+      balance: Number(document.getElementById('efBalance').value) || 600
+    };
+    const action = id ? 'updateEmployee' : 'addEmployee';
+    document.getElementById('empFormMsg').innerText = 'جاري الحفظ...';
+    document.getElementById('empFormMsg').style.color = '#555';
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', action);
+      formData.append('data', JSON.stringify(payload));
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('empFormMsg').innerText = '✅ تم الحفظ بنجاح. سيُحدَّث الملف عند إعادة تحميل الصفحة.';
+        document.getElementById('empFormMsg').style.color = '#28a745';
+        setTimeout(() => closeEmployeeForm(), 1500);
+      } else {
+        throw new Error(result.message || 'فشل الحفظ');
+      }
+    } catch(e) {
+      document.getElementById('empFormMsg').innerText = '❌ ' + (e.message || 'خطأ');
+      document.getElementById('empFormMsg').style.color = '#dc3545';
+    }
+  }
+
+  async function deleteEmployee(id, name) {
+    if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+    try {
+      const formData = new URLSearchParams();
+      formData.append('action', 'deleteEmployee');
+      formData.append('data', JSON.stringify({ id }));
+      const res = await fetch(API_URL, { method: 'POST', body: formData, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      const result = await res.json();
+      if (result.success) {
+        alert('✅ تم الحذف (من قاعدة بيانات الخادم، وليس من encoded_data.txt)');
+        ALL_EMPLOYEES = ALL_EMPLOYEES.filter(e => String(e.id) !== String(id));
+        renderEmployeesList();
+      } else {
+        alert('❌ ' + (result.message || 'فشل الحذف'));
+      }
+    } catch(e) {
+      alert('❌ خطأ في الاتصال');
+    }
+  }
+
+  // ---------- أدوات ----------
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
+
   Object.assign(window, {
-    showTrackingScreen,
-    trackRequest,
-    verifyEmp,
-    calcDuration,
-    submitRequest,
-    sendWhatsApp,
-    askPassword,
-    fetchRequest,
-    approveRequest,
-    sendAutoWhatsApp,
-    loadStats
+    showTrackingScreen, trackRequest, verifyEmp, calcDuration, submitRequest,
+    sendWhatsApp, askPassword, fetchRequest, approveRequest, sendAutoWhatsApp,
+    loadStats, addCoverageEntry, removeCoverageEntry, switchAdminTab,
+    renderEmployeesList, openAddEmployeeForm, openEditEmployeeForm, closeEmployeeForm,
+    saveEmployee, deleteEmployee
   });
 
-  // إظهار الأخطاء البرمجية بدل أن تبدو الأزرار وكأنها لا تستجيب.
-  window.addEventListener('error', function (event) {
-    console.error('Staff Permissions JavaScript error:', event.error || event.message);
-    const loginError = document.getElementById('loginError');
-    if (loginError && !loginError.innerText) {
-      loginError.innerText = 'حدث خطأ في تشغيل النظام. افتح Console لمعرفة التفاصيل.';
-    }
-  });
+  // تحميل أولي
+  loadAllEmployees();
 
-  window.addEventListener('unhandledrejection', function (event) {
-    console.error('Staff Permissions async error:', event.reason);
-    const loginError = document.getElementById('loginError');
-    if (loginError && !loginError.innerText) {
-      loginError.innerText = 'تعذر إكمال العملية بسبب خطأ في الاتصال أو البيانات.';
-    }
+  window.addEventListener('error', e => {
+    console.error('Error:', e.error || e.message);
   });
-
+  window.addEventListener('unhandledrejection', e => {
+    console.error('Async error:', e.reason);
+  });
 </script>
 </body>
 </html>
